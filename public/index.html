@@ -118,17 +118,29 @@ function calc() {
   res.style.color = isOk ? 'var(--ok)' : 'var(--ng)';
 }
 
+// --- index.html の <script> 内、sendMail関数を以下に差し替え ---
+
 async function sendMail(){
   const name = document.getElementById('name').value.trim();
   if(!name) return alert('氏名を入力してください');
   
   const cashText = document.getElementById('cashResult').textContent;
   const comment = document.getElementById('comment').value;
-  const checks = [...document.querySelectorAll(`#${mode==='開店'?'open':'close'}Section input:checked`)].map(c=>'・'+c.value).join('\n');
-  
-  // バリデーション
+
+  // 【修正】チェック状況：[済] または [未] を付けて全項目送る
+  const checks = [...document.querySelectorAll(`#${mode==='開店'?'open':'close'}Section input`)].map(c => {
+    return (c.checked ? '✅ [済] ' : '❌ [未] ') + c.value;
+  }).join('\n');
+
+  // 【修正】金種の内訳をテキスト化して収集
+  const denoms = [
+    {label: '10,000円', id: 'n10000'}, {label: '5,000円', id: 'n5000'}, {label: '1,000円', id: 'n1000'},
+    {label: '500円', id: 'n500'}, {label: '100円', id: 'n100'}, {label: '50円', id: 'n50'},
+    {label: '10円', id: 'n10'}, {label: '5円', id: 'n5'}, {label: '1円', id: 'n1'}
+  ].map(d => `${d.label}: ${document.getElementById(d.id).value || 0} 枚`).join('\n');
+
+  // バリデーション（警告は出すが、送信自体は止めないように後ほど調整可能）
   if(mode === '開店' && !cashText.includes('基準一致')) return alert('開店時は釣り銭を3万円に合わせてください');
-  if(mode === '閉店' && !cashText.includes('基準一致') && !comment) return alert('金額に差異がある場合は、コメント欄に理由を記入してください');
 
   const btn = document.getElementById('sendBtn');
   btn.disabled = true; btn.textContent = '送信中...';
@@ -137,7 +149,8 @@ async function sendMail(){
     const res = await fetch('/api/report', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ mode, name, checks, cashText, comment })
+      // 【修正】denominations (denoms) を追加して送信
+      body: JSON.stringify({ mode, name, checks, cashText, comment, denominations: denoms })
     });
     const data = await res.json();
     if(res.ok) { 
