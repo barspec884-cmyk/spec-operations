@@ -1,0 +1,14 @@
+﻿{
+  "name": "spec-operations",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "resend": "^3.0.0"
+  },
+  "scripts": {
+    "build": "echo 'No build step'"
+  },
+  "engines": {
+    "node": "20.x"
+  }
+}
