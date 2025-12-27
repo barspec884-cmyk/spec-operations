@@ -24,7 +24,7 @@ module.exports = async function handler(req, res) {
     const resend = new Resend(process.env.RESEND_API_KEY);
 
     await resend.emails.send({
-      from: 'Bar SPEC <noreply@uspot.jp>', // ※Resendでドメイン認証済みである必要があります
+      from: 'onboarding@resend.dev',// ※Resendでドメイン認証済みである必要があります
       to: ['bar-spec@uspot.jp'],
       subject: `【${mode}チェック完了】${name}`,
       text: `【業務チェック報告】\n区分：${mode}\n担当者：${name}\n\n■ チェック項目\n${checks || 'なし'}\n\n■ 釣り銭\n${cashText}\n\n■ コメント\n${comment || 'なし'}`
