@@ -1,0 +1,7 @@
+﻿{
+  "name": "spec-operations",
+  "private": true,
+  "dependencies": {
+    "resend": "^3.0.0"
+  }
+}
