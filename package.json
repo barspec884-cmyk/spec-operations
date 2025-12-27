@@ -1,10 +1,10 @@
 ﻿{
-  "name": "spec-operations",
-  "version": "1.0.0",
-  "dependencies": {
-    "resend": "^3.0.0"
-  },
-  "engines": {
-    "node": "20.x"
-  }
+"name": "spec-operations",
+"version": "1.0.0",
+"dependencies": {
+"resend": "^3.0.0"
+},
+"engines": {
+"node": "20.x"
+}
 }
