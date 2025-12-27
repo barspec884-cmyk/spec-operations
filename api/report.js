@@ -23,11 +23,17 @@ module.exports = async function handler(req, res) {
 
     const resend = new Resend(process.env.RESEND_API_KEY);
 
+    // メール送信処理（整理済み）
     await resend.emails.send({
-      from: 'onboarding@resend.dev',// ※Resendでドメイン認証済みである必要があります
-      to: ['bar-spec@uspot.jp'],
-      subject: `【${mode}チェック完了】${name}`,
-      text: `【業務チェック報告】\n区分：${mode}\n担当者：${name}\n\n■ チェック項目\n${checks || 'なし'}\n\n■ 釣り銭\n${cashText}\n\n■ コメント\n${comment || 'なし'}`
+      from: 'onboarding@resend.dev',
+      to: ['amber.palette.spec@gmail.com'], // 必ずResend登録時のメアドにしてください
+      subject: `【${mode}報告】${name}様より`,
+      text: `以下の通り報告がありました。\n\n` +
+            `区分：${mode}\n` +
+            `担当者：${name}\n` +
+            `チェック事項：${checks || 'なし'}\n` +
+            `釣り銭：${cashText}\n` +
+            `コメント：${comment || 'なし'}`
     });
 
     return res.status(200).json({ ok: true });
