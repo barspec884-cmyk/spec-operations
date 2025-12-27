@@ -39,27 +39,46 @@ input[type="checkbox"]{transform:scale(1.2);margin-right:8px;}
     <div id="tabClose" class="tab" onclick="setMode('閉店')">閉店</div>
   </div>
 
-  <div id="openSection" class="card">
-    <h2>開店チェック項目</h2>
-    <h3>2階</h3>
-    <label><input type="checkbox" value="2F トイレ・床・鏡"> トイレ・床・鏡</label>
-    <label><input type="checkbox" value="2F テーブル・椅子"> テーブル・椅子</label>
-    <label><input type="checkbox" value="2F 備品・menu"> 備品・menuチェック</label>
-    <h3>1階・共通</h3>
-    <label><input type="checkbox" value="1F カウンター・床"> カウンター・床</label>
-    <label><input type="checkbox" value="1F キッチン・バックバー"> キッチン・バックバー</label>
-    <label><input type="checkbox" value="階段・エントランス"> 階段・エントランス</label>
-    <label><input type="checkbox" value="レジ・在庫確認"> レジ・在庫確認</label>
-  </div>
+<div id="openSection" class="card">
+  <h2>開店チェック項目</h2>
+  <h3>2階</h3>
+  <label><input type="checkbox" value="2F トイレ・床・鏡"> トイレ・床・鏡</label>
+  <label><input type="checkbox" value="2F テーブル・椅子"> テーブル・椅子</label>
+  <label><input type="checkbox" value="2F 備品・menu"> 備品・menuチェック</label>
 
-  <div id="closeSection" class="card hidden">
-    <h2>閉店チェック項目</h2>
-    <label><input type="checkbox" value="レジ締完了"> レジ締完了</label>
-    <label><input type="checkbox" value="全フロア エアコンOFF"> 全フロア エアコンOFF</label>
-    <label><input type="checkbox" value="照明消灯・食洗機・ウォーマー"> 照明・食洗機・ウォーマー</label>
-    <label><input type="checkbox" value="カーテン・施錠"> カーテン・施錠</label>
-  </div>
+  <h3>1階・共通</h3>
+  <label><input type="checkbox" value="1F トイレ・床・鏡"> 1F トイレ・床・鏡</label>
+  <label><input type="checkbox" value="1F カウンター・床"> カウンター・床</label>
+  <label><input type="checkbox" value="1F キッチン・バックバー"> キッチン・バックバー</label>
+  <label><input type="checkbox" value="階段・エントランス"> 階段・エントランス</label>
+  <label><input type="checkbox" value="レジ・在庫確認"> レジ・在庫確認</label>
+</div>
 
+<div id="closeSection" class="card hidden">
+  <h2>閉店チェック項目</h2>
+  
+  <h3>❄️ 2階（忘れ物注意！）</h3>
+  <label style="color:var(--ng); font-weight:bold;"><input type="checkbox" value="2F エアコンOFF"> 2階 エアコンOFF</label>
+  
+  <h3>🪧 外回り・備品</h3>
+  <label><input type="checkbox" value="看板の収納"> 看板を中に戻した</label>
+  <label><input type="checkbox" value="マットの収納"> 外マットを中に戻した</label>
+  <label><input type="checkbox" value="カーテンを下ろす"> ロールスクリーンを下ろした</label>
+  <label><input type="checkbox" value="戸棚の戸締まり"> 戸棚をきっちり閉めた</label>
+
+  <h3>🔌 設備・キッチン</h3>
+  <label><input type="checkbox" value="ウォーマーOFF"> おしぼりウォーマーOFF</label>
+  <label><input type="checkbox" value="照明・食洗機電源"> 照明消灯・食洗機等の確認</label>
+  <label><input type="checkbox" value="1F エアコンOFF"> 1階 エアコンOFF</label>
+
+  <h3>💰 事務</h3>
+  <label><input type="checkbox" value="レジ締完了"> レジ締め処理の完了</label>
+
+  <h3 style="background:var(--ng); color:#000; padding:4px 8px; border-radius:4px;">🔒 最終確認（最重要！）</h3>
+  <label style="border:2px solid var(--ng); font-weight:bold;">
+    <input type="checkbox" value="入口ドアの施錠確認"> 1F 入口ドアの施錠（指差し確認）
+  </label>
+</div>
   <div class="card">
     <h2>釣り銭チェック（合計3万円）</h2>
     <h3>紙幣（枚数）</h3>
