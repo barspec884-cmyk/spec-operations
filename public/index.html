@@ -22,7 +22,7 @@
     body{ margin:0; font-family:sans-serif; background:var(--bg); color:var(--text); padding-bottom: calc(80px + var(--safe-bottom)); line-height: 1.6; }
     *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
 
-    /* 入力欄の矢印（スピンボタン）を非表示にする */
+    /* スピンボタン（矢印）を消去 */
     input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     input[type=number] { -moz-appearance: textfield; }
 
@@ -33,18 +33,20 @@
     .view-tabs { display: flex; gap: 6px; padding: 0 10px 10px; }
     .tab-btn { flex: 1; padding: 12px 0; text-align: center; background: var(--panel2); border: 1px solid var(--line); color: var(--muted); border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; }
     .tab-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
-    .tab-btn.active.close-tab { background: var(--blue); }
+    .tab-btn.active.close-tab { background: var(--blue); color: #000; }
 
     main{ padding: 15px; max-width: 600px; margin: 0 auto; }
     section { margin-bottom: 30px; }
     h2 { font-size: 13px; color: var(--accent); border-left: 3px solid var(--accent); padding-left: 10px; margin-bottom: 15px; text-transform: uppercase; }
     .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin-bottom: 15px; }
 
+    /* 金種入力グリッド */
     .cash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .cash-item { display: flex; align-items: center; justify-content: space-between; background: #000; padding: 10px; border-radius: 8px; border: 1px solid #222; }
-    .cash-item span { font-size: 12px; color: var(--muted); }
+    .cash-item span { font-size: 13px; color: var(--muted); }
     .cash-item input { width: 70px; background: transparent; border: none; color: #fff; font-size: 18px; text-align: right; outline: none; }
     
+    /* チェックリスト */
     label { display:flex; align-items:center; margin:12px 0; font-size:14px; cursor: pointer; }
     input[type="checkbox"] { transform:scale(1.4); margin-right: 12px; }
     textarea { width:100%; padding:12px; border-radius:10px; border:1px solid #333; background:#000; color:var(--text); font-size:16px; outline: none; margin-top:10px;}
@@ -54,8 +56,7 @@
     .code-val { font-family: monospace; color: var(--accent); font-weight: bold; background: #000; padding: 2px 5px; border-radius: 4px; }
     .hidden { display: none !important; }
     
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    .welcome-anim { animation: fadeInUp 0.8s ease-out forwards; text-align: center; margin-bottom: 20px; color: var(--accent); }
+    .welcome-anim { text-align: center; margin-bottom: 20px; color: var(--accent); font-size: 14px; }
     .tuesday-alert { color: var(--todo); font-weight: bold; border: 1px dashed var(--todo); padding: 5px 10px; border-radius: 4px; display: inline-block; margin-top: 10px; font-size: 13px; }
   </style>
 </head>
@@ -65,13 +66,13 @@
   <div class="logo" style="font-size: 24px; margin-bottom: 20px;">SPEC-OPS</div>
   <input type="text" id="staff-name-input" placeholder="スタッフ名" style="width:280px; padding:15px; background:var(--panel); border:1px solid var(--line); border-radius:10px; color:#fff; text-align:center; margin-bottom:15px; outline:none;">
   <input type="password" id="pass-input" placeholder="Password" style="width:280px; padding:15px; background:var(--panel); border:1px solid var(--accent); border-radius:10px; color:#fff; text-align:center; margin-bottom:15px; outline:none;">
-  <button onclick="checkAuth()" style="width:280px; padding:15px; background:var(--accent); border:none; border-radius:10px; font-weight:bold; cursor:pointer;">ENTER SYSTEM</button>
+  <button onclick="checkAuth()" style="width:280px; padding:15px; background:var(--accent); border:none; border-radius:10px; font-weight:bold; cursor:pointer; color:#000;">ENTER SYSTEM</button>
 </div>
 
 <div class="sticky-header">
   <header><div class="logo">SPEC-OPS</div></header>
   <div class="view-tabs">
-    <div class="tab-btn active" onclick="switchView('manual')">Manual</div>
+    <div id="tabManual" class="tab-btn active" onclick="switchView('manual')">Manual</div>
     <div id="tabReport" class="tab-btn" onclick="switchView('report')">Report</div>
   </div>
 </div>
@@ -94,7 +95,7 @@
       <div class="card">
         <div class="info-box"><b>カクヤス (当日21時迄):</b> <span class="code-val">0570-200-919</span><br><b>店舗コード:</b> <span class="code-val">679383</span></div>
         <div class="info-box"><b>氷（中央冷凍）: LINE発注</b><br>キング2 / ダイヤ1 / 丸(60)3 / 丸(70)2<br>
-          <div style="margin-top:8px; padding-top:8px; border-top:1px dashed var(--line); color:var(--accent); font-weight:bold;">
+          <div style="margin-top:8px; padding-top:8px; border-top:1px dashed var(--line); color:var(--accent); font-weight:bold; font-size:12px;">
             💡 2階の冷凍在庫を上記になる様に持って降りたら発注
           </div>
         </div>
@@ -104,7 +105,7 @@
   </div>
 
   <div id="report-view" class="hidden">
-    <div class="card"><div style="display:flex; gap:8px;"><button id="btnOpenMode" onclick="setMode('開店')" style="flex:1; padding:10px; border-radius:8px; border:none; background:var(--accent); font-weight:bold; cursor:pointer;">開店</button><button id="btnCloseMode" onclick="setMode('閉店')" style="flex:1; padding:10px; border-radius:8px; border:none; background:var(--panel2); color:#fff; font-weight:bold; cursor:pointer;">閉店</button></div></div>
+    <div class="card"><div style="display:flex; gap:8px;"><button id="btnOpenMode" onclick="setMode('開店')" style="flex:1; padding:10px; border-radius:8px; border:none; background:var(--accent); color:#000; font-weight:bold; cursor:pointer;">開店</button><button id="btnCloseMode" onclick="setMode('閉店')" style="flex:1; padding:10px; border-radius:8px; border:none; background:var(--panel2); color:#fff; font-weight:bold; cursor:pointer;">閉店</button></div></div>
     
     <div id="openSection" class="card">
       <h2>開店チェック</h2>
@@ -120,7 +121,7 @@
 
     <div id="closeSection" class="card hidden">
       <h2>閉店チェック</h2>
-      <label style="color:var(--ng); font-weight:bold;"><input type="checkbox" value="2F エアコンOFF"> 3F 2階 エアコンOFF</label>
+      <label style="color:var(--ng); font-weight:bold;"><input type="checkbox" value="2F エアコンOFF"> 2階 エアコンOFF</label>
       <label><input type="checkbox" value="1F エアコンOFF"> 1階 エアコンOFF</label>
       <label><input type="checkbox" value="看板の収納"> 看板を中に戻した</label>
       <label><input type="checkbox" value="マットの収納"> 外マットを中に戻した</label>
@@ -129,7 +130,7 @@
       <label><input type="checkbox" value="ウォーマーOFF"> おしぼりウォーマーOFF</label>
       <label><input type="checkbox" value="照明・食洗機電源"> 照明消灯・食洗機等確認</label>
       <label><input type="checkbox" value="レジ締完了"> レジ締め処理の完了</label>
-      <label style="border:2px solid var(--ng); padding:8px; border-radius:8px;"><input type="checkbox" value="入口ドア施錠確認"> 1F 入口施錠（指差し）</label>
+      <label style="border:2px solid var(--ng); padding:8px; border-radius:8px;"><input type="checkbox" value="入口ドア施錠（指差し）"> 1F 入口施錠（指差し）</label>
     </div>
 
     <div class="card">
@@ -179,25 +180,37 @@ function displayWelcome(name) {
 }
 
 function switchView(view) {
-  const views = ['manual', 'report'];
-  const tabs = document.querySelectorAll('.tab-btn');
-  views.forEach((v, i) => {
-    document.getElementById(v + '-view').classList.toggle('hidden', v !== view);
-    tabs[i].classList.toggle('active', v === view);
-  });
-  if(view === 'report' && currentMode === '閉店') tabs[1].classList.add('close-tab');
-  else tabs[1].classList.remove('close-tab');
+  document.getElementById('manual-view').classList.toggle('hidden', view !== 'manual');
+  document.getElementById('report-view').classList.toggle('hidden', view !== 'report');
+  document.getElementById('tabManual').classList.toggle('active', view === 'manual');
+  document.getElementById('tabReport').classList.toggle('active', view === 'report');
+  
+  const tabReport = document.getElementById('tabReport');
+  if(view === 'report' && currentMode === '閉店') {
+    tabReport.classList.add('close-tab');
+  } else {
+    tabReport.classList.remove('close-tab');
+  }
   window.scrollTo(0,0);
 }
 
 function setMode(m) {
-  currentMode = m; const isOpen = (m === '開店');
+  currentMode = m;
+  const isOpen = (m === '開店');
   document.getElementById('openSection').classList.toggle('hidden', !isOpen);
   document.getElementById('closeSection').classList.toggle('hidden', isOpen);
-  document.getElementById('btnOpenMode').style.background = isOpen ? 'var(--accent)' : 'var(--panel2)';
-  document.getElementById('btnCloseMode').style.background = isOpen ? 'var(--panel2)' : 'var(--blue)';
+  
+  const btnOpen = document.getElementById('btnOpenMode');
+  const btnClose = document.getElementById('btnCloseMode');
+  const tabReport = document.getElementById('tabReport');
+  
+  btnOpen.style.background = isOpen ? 'var(--accent)' : 'var(--panel2)';
+  btnOpen.style.color = isOpen ? '#000' : '#888';
+  btnClose.style.background = isOpen ? 'var(--panel2)' : 'var(--blue)';
+  btnClose.style.color = isOpen ? '#fff' : '#000';
+  
   document.body.style.background = isOpen ? 'var(--bg)' : '#0b1020';
-  document.getElementById('tabReport').classList.toggle('close-tab', !isOpen);
+  tabReport.classList.toggle('close-tab', !isOpen);
 }
 
 function calc() {
@@ -238,7 +251,6 @@ window.onload = () => {
   if (isAuth === 'true') { document.getElementById('auth-overlay').style.display = 'none'; displayWelcome(savedName); }
   if (savedName) { document.getElementById('staff-name-input').value = savedName; }
 };
-
 if ("serviceWorker" in navigator) { navigator.serviceWorker.register("/sw.js"); }
 </script>
 </body>
