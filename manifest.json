@@ -1,11 +1,6 @@
 ﻿{
   "name": "SPEC-OPS｜Bar SPEC",
   "short_name": "SPEC-OPS",
-  "description": "Bar SPEC 業務執行・マニュアル閲覧システム",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#0e0c0a",
-  "theme_color": "#c5a059",
   "icons": [
     {
       "src": "icon-192.png",
@@ -17,5 +12,7 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ]
+  ],
+  "display": "standalone",
+  "start_url": "/"
 }
