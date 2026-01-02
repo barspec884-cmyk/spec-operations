@@ -22,12 +22,16 @@
     body{ margin:0; font-family:sans-serif; background:var(--bg); color:var(--text); padding-bottom: calc(80px + var(--safe-bottom)); line-height: 1.6; }
     *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
 
-    /* Layout & Tabs */
+    /* 入力欄の矢印（スピンボタン）を非表示にする */
+    input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    input[type=number] { -moz-appearance: textfield; }
+
     .sticky-header { position: sticky; top: 0; z-index: 1000; background: rgba(14, 12, 10, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); padding-top: var(--safe-top); }
-    header { padding: 10px 15px; display: flex; align-items: center; justify-content: space-between; height: 50px; }
-    .logo { font-size: 16px; font-weight: 800; letter-spacing: 2px; color: var(--accent); }
+    header { padding: 10px 15px; display: flex; align-items: center; justify-content: center; height: 50px; }
+    .logo { font-size: 16px; font-weight: 800; letter-spacing: 4px; color: var(--accent); }
+    
     .view-tabs { display: flex; gap: 6px; padding: 0 10px 10px; }
-    .tab-btn { flex: 1; padding: 12px 0; text-align: center; background: var(--panel2); border: 1px solid var(--line); color: #888; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; }
+    .tab-btn { flex: 1; padding: 12px 0; text-align: center; background: var(--panel2); border: 1px solid var(--line); color: var(--muted); border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; }
     .tab-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
     .tab-btn.active.close-tab { background: var(--blue); }
 
@@ -36,21 +40,20 @@
     h2 { font-size: 13px; color: var(--accent); border-left: 3px solid var(--accent); padding-left: 10px; margin-bottom: 15px; text-transform: uppercase; }
     .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin-bottom: 15px; }
 
-    /* Report Elements */
     .cash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .cash-item { display: flex; align-items: center; justify-content: space-between; background: #000; padding: 10px; border-radius: 8px; border: 1px solid #222; }
-    .cash-item input { width: 60px; background: transparent; border: none; color: #fff; font-size: 16px; text-align: right; outline: none; }
+    .cash-item span { font-size: 12px; color: var(--muted); }
+    .cash-item input { width: 70px; background: transparent; border: none; color: #fff; font-size: 18px; text-align: right; outline: none; }
+    
     label { display:flex; align-items:center; margin:12px 0; font-size:14px; cursor: pointer; }
-    input[type="checkbox"] { transform:scale(1.3); margin-right: 12px; }
+    input[type="checkbox"] { transform:scale(1.4); margin-right: 12px; }
     textarea { width:100%; padding:12px; border-radius:10px; border:1px solid #333; background:#000; color:var(--text); font-size:16px; outline: none; margin-top:10px;}
     .send-btn { width:100%; padding:18px; border-radius:14px; border:none; font-size:16px; font-weight:800; background:var(--accent); color:#000; cursor:pointer; margin-top:20px; }
 
-    /* Info Elements */
     .info-box { background: rgba(197,160,89,0.1); border: 1px dashed var(--accent); padding: 12px; border-radius: 8px; margin: 10px 0; font-size: 13px; }
     .code-val { font-family: monospace; color: var(--accent); font-weight: bold; background: #000; padding: 2px 5px; border-radius: 4px; }
     .hidden { display: none !important; }
     
-    /* Animation */
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     .welcome-anim { animation: fadeInUp 0.8s ease-out forwards; text-align: center; margin-bottom: 20px; color: var(--accent); }
     .tuesday-alert { color: var(--todo); font-weight: bold; border: 1px dashed var(--todo); padding: 5px 10px; border-radius: 4px; display: inline-block; margin-top: 10px; font-size: 13px; }
@@ -60,13 +63,13 @@
 
 <div id="auth-overlay" style="position:fixed; inset:0; background:var(--bg); z-index:9999; display:flex; align-items:center; justify-content:center; flex-direction:column; padding:20px;">
   <div class="logo" style="font-size: 24px; margin-bottom: 20px;">SPEC-OPS</div>
-  <input type="text" id="staff-name-input" placeholder="スタッフ名" class="auth-input" style="width:280px; padding:15px; background:var(--panel); border:1px solid var(--line); border-radius:10px; color:#fff; text-align:center; margin-bottom:15px; outline:none;">
-  <input type="password" id="pass-input" placeholder="Password" class="auth-input" style="width:280px; padding:15px; background:var(--panel); border:1px solid var(--accent); border-radius:10px; color:#fff; text-align:center; margin-bottom:15px; outline:none;">
-  <button onclick="checkAuth()" style="width:280px; padding:15px; background:var(--accent); border:none; border-radius:10px; font-weight:bold;">ENTER SYSTEM</button>
+  <input type="text" id="staff-name-input" placeholder="スタッフ名" style="width:280px; padding:15px; background:var(--panel); border:1px solid var(--line); border-radius:10px; color:#fff; text-align:center; margin-bottom:15px; outline:none;">
+  <input type="password" id="pass-input" placeholder="Password" style="width:280px; padding:15px; background:var(--panel); border:1px solid var(--accent); border-radius:10px; color:#fff; text-align:center; margin-bottom:15px; outline:none;">
+  <button onclick="checkAuth()" style="width:280px; padding:15px; background:var(--accent); border:none; border-radius:10px; font-weight:bold; cursor:pointer;">ENTER SYSTEM</button>
 </div>
 
 <div class="sticky-header">
-  <header><div class="logo">SPEC-OPS</div><div class="ver">Operations Only</div></header>
+  <header><div class="logo">SPEC-OPS</div></header>
   <div class="view-tabs">
     <div class="tab-btn active" onclick="switchView('manual')">Manual</div>
     <div id="tabReport" class="tab-btn" onclick="switchView('report')">Report</div>
@@ -80,24 +83,18 @@
     <section>
       <h2>業務フロー & 料金体系</h2>
       <div class="card">
-        <div class="info-box"><b>Happy Hour (18-19):</b> No Charge / お通し無料<br><b>Bar Time (19-):</b> Charge ¥1,000</div>
+        <div class="info-box"><b>Happy Hour (18-19):</b> No Charge<br><b>Bar Time (19-):</b> Charge ¥1,000</div>
         <ul style="padding-left:15px; font-size:13px; color:var(--muted);">
-          <li style="color:var(--todo); font-weight:bold;">火曜日限定：おしぼりを出す</li>
-          <li>挨拶：ハリのある声で「いらっしゃいませ」</li>
-          <li>見送り：入口まで見送り、最高に良い印象を</li>
+          <li style="color:var(--todo); font-weight:bold;">火曜日：おしぼりを出す</li>
+          <li>挨拶：ハリのある声で</li>
+          <li>見送り：入口まで。最高に良い印象を</li>
         </ul>
       </div>
       <h2>発注 & 連絡先</h2>
       <div class="card">
         <div class="info-box"><b>カクヤス (当日21時迄):</b> <span class="code-val">0570-200-919</span><br><b>店舗コード:</b> <span class="code-val">679383</span></div>
-        <div class="info-box"><b>氷（中央冷凍）: LINE発注</b><br>
-          <ul style="margin:5px 0; padding-left:18px; font-size:13px;">
-            <li>キングアイス：2単位</li>
-            <li>ダイヤアイス：1単位</li>
-            <li>丸氷(ボール) 60㎜：3単位</li>
-            <li>丸氷(ボール) 70㎜：2単位</li>
-          </ul>
-          <div style="margin-top:8px; padding-top:8px; border-top:1px dashed var(--line); color:var(--accent); font-weight:bold; font-size:12px;">
+        <div class="info-box"><b>氷（中央冷凍）: LINE発注</b><br>キング2 / ダイヤ1 / 丸(60)3 / 丸(70)2<br>
+          <div style="margin-top:8px; padding-top:8px; border-top:1px dashed var(--line); color:var(--accent); font-weight:bold;">
             💡 2階の冷凍在庫を上記になる様に持って降りたら発注
           </div>
         </div>
@@ -107,7 +104,7 @@
   </div>
 
   <div id="report-view" class="hidden">
-    <div class="card"><div style="display:flex; gap:8px;"><button id="btnOpenMode" onclick="setMode('開店')" style="flex:1; padding:10px; border-radius:8px; border:none; background:var(--accent); font-weight:bold;">開店</button><button id="btnCloseMode" onclick="setMode('閉店')" style="flex:1; padding:10px; border-radius:8px; border:none; background:var(--panel2); color:#fff; font-weight:bold;">閉店</button></div></div>
+    <div class="card"><div style="display:flex; gap:8px;"><button id="btnOpenMode" onclick="setMode('開店')" style="flex:1; padding:10px; border-radius:8px; border:none; background:var(--accent); font-weight:bold; cursor:pointer;">開店</button><button id="btnCloseMode" onclick="setMode('閉店')" style="flex:1; padding:10px; border-radius:8px; border:none; background:var(--panel2); color:#fff; font-weight:bold; cursor:pointer;">閉店</button></div></div>
     
     <div id="openSection" class="card">
       <h2>開店チェック</h2>
@@ -138,17 +135,17 @@
     <div class="card">
       <h2>金種チェック（準備金：3万円）</h2>
       <div class="cash-grid">
-        <div class="cash-item"><span>￥10,000</span><input type="number" id="n10000" oninput="calc()"></div>
-        <div class="cash-item"><span>￥5000</span><input type="number" id="n5000" oninput="calc()"></div>
-        <div class="cash-item"><span>￥1000</span><input type="number" id="n1000" oninput="calc()"></div>
-        <div class="cash-item"><span>￥500</span><input type="number" id="n500" oninput="calc()"></div>
-        <div class="cash-item"><span>￥100</span><input type="number" id="n100" oninput="calc()"></div>
-        <div class="cash-item"><span>￥50</span><input type="number" id="n50" oninput="calc()"></div>
-        <div class="cash-item"><span>￥10</span><input type="number" id="n10" oninput="calc()"></div>
-        <div class="cash-item"><span>￥5</span><input type="number" id="n5" oninput="calc()"></div>
-        <div class="cash-item"><span>￥1</span><input type="number" id="n1" oninput="calc()"></div>
+        <div class="cash-item"><span>10,000円</span><input type="number" id="n10000" oninput="calc()"></div>
+        <div class="cash-item"><span>5,000円</span><input type="number" id="n5000" oninput="calc()"></div>
+        <div class="cash-item"><span>1,000円</span><input type="number" id="n1000" oninput="calc()"></div>
+        <div class="cash-item"><span>500円</span><input type="number" id="n500" oninput="calc()"></div>
+        <div class="cash-item"><span>100円</span><input type="number" id="n100" oninput="calc()"></div>
+        <div class="cash-item"><span>50円</span><input type="number" id="n50" oninput="calc()"></div>
+        <div class="cash-item"><span>10円</span><input type="number" id="n10" oninput="calc()"></div>
+        <div class="cash-item"><span>5円</span><input type="number" id="n5" oninput="calc()"></div>
+        <div class="cash-item"><span>1円</span><input type="number" id="n1" oninput="calc()"></div>
       </div>
-      <p id="cashResult" style="text-align:center; margin-top:15px; font-size:18px; font-weight:bold;">合計：0 円</p>
+      <p id="cashResult" style="text-align:center; margin-top:15px; font-size:18px; font-weight:bold; color:var(--ng);">合計：0 円（不一致）</p>
     </div>
     <div class="card">
       <textarea id="comment" rows="3" placeholder="連絡事項・割れ物等"></textarea>
@@ -177,7 +174,7 @@ function displayWelcome(name) {
   const now = new Date(); const days = ['日','月','火','水','木','金','土'];
   const messages = ["今日も頑張っていきましょう！","ガッツリ儲けていきましょう！💰","最高の一杯をお客さまに！🍸","SPEC-OPS 起動。","今日もおもてなし！","笑顔で最高な一日に！"];
   let html = `<div class="welcome-anim"><small>${now.getMonth()+1}/${now.getDate()}(${days[now.getDay()]})</small><br><strong>お疲れ様です、${name}さん。</strong><br>${messages[Math.floor(Math.random()*messages.length)]}</div>`;
-  if (now.getDay() === 2) html += `<div class="welcome-anim tuesday-alert">⚠️ 火曜日：おしぼり準備！</div>`;
+  if (now.getDay() === 2) html += `<div class="welcome-anim tuesday-alert">⚠️ 本日は火曜日です：おしぼり準備！</div>`;
   msgEl.innerHTML = html; msgEl.style.display = 'block';
 }
 
