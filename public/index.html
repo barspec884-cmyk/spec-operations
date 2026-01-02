@@ -5,27 +5,24 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>業務チェック｜Bar SPEC</title>
 <style>
-/* 既存のスタイル */
 :root{--bg-open:#0e0c0a;--bg-close:#0b1020;--panel:#181512;--text:#f4ead7;--muted:#c9b89b;--amber:#d7b274;--blue:#7da7ff;--ok:#8fd19e;--ng:#ff8f8f;}
 *{box-sizing:border-box}
 body{margin:0;font-family:sans-serif;background:var(--bg-open);color:var(--text);transition:background .3s;}
 body.close{background:var(--bg-close)}
 
-/* 🔑 パスワード画面用の追加スタイル */
+/* 🔑 ログイン画面のスタイル */
 #auth-overlay {
-  position:fixed; top:0; left:0; width:100%; height:100%; 
-  background:var(--bg-open); z-index:9999; 
-  display:flex; flex-direction:column; align-items:center; justify-content:center; 
-  padding:20px; text-align:center;
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: var(--bg-open); z-index: 10000;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 20px; text-align: center;
 }
-.auth-box { width:100%; max-width:300px; }
-.auth-input { 
-  width:100%; padding:15px; background:#000; border:1px solid var(--amber); 
-  border-radius:10px; color:#fff; font-size:18px; margin-bottom:15px; 
-  text-align:center; outline:none;
+.auth-input {
+  width: 80%; max-width: 300px; padding: 15px; background: #000;
+  border: 1px solid var(--amber); border-radius: 10px; color: #fff;
+  font-size: 18px; margin-bottom: 15px; outline: none; text-align: center;
 }
 
-/* 既存のレイアウト */
 header{padding:14px;text-align:center;font-weight:600;background:#1c1814;border-bottom:1px solid #ffffff22;}
 main{padding:16px}
 .card{background:var(--panel);border-radius:14px;padding:16px;margin-bottom:16px;}
@@ -46,19 +43,22 @@ input[type="checkbox"]{transform:scale(1.2);margin-right:8px;}
 <body>
 
 <div id="auth-overlay">
-  <div class="auth-box">
-    <div style="font-size: 20px; margin-bottom: 20px; color:var(--amber);">STAFF ONLY</div>
-    <input type="password" id="pass-input" class="auth-input" placeholder="Password">
-    <button onclick="checkAuth()">認証して進む</button>
-    <p id="auth-error" style="color:var(--ng); margin-top:15px; visibility:hidden;">パスワードが違います</p>
-  </div>
+  <div style="font-size: 24px; margin-bottom: 20px; color:var(--amber); font-weight: bold;">Bar SPEC STAFF ONLY</div>
+  
+  <input type="text" id="staff-name-input" class="auth-input" placeholder="名前を入力">
+  
+  <input type="password" id="pass-input" class="auth-input" placeholder="Password">
+  
+  <button onclick="checkAuth()" style="width:80%; max-width:300px;">ログイン</button>
+  <p id="auth-error" style="color:var(--ng); margin-top:15px; visibility:hidden;">パスワードが違います</p>
 </div>
 
 <header>Bar SPEC 業務チェック</header>
 <main>
   <div class="card">
-    <h2>担当者氏名（必須）</h2>
-    <input id="name" type="text" placeholder="氏名を入力">
+    <h2>担当者氏名</h2>
+    <input id="name" type="text" readonly style="background:#111; color:#888;">
+    <p style="font-size:11px; color:var(--muted); margin-top:5px;">※ログイン時に入力した名前が反映されます</p>
   </div>
 
   <div class="tabs">
@@ -95,7 +95,7 @@ input[type="checkbox"]{transform:scale(1.2);margin-right:8px;}
     <label><input type="checkbox" value="1F エアコンOFF"> 1階 エアコンOFF</label>
     <h3>💰 事務</h3>
     <label><input type="checkbox" value="レジ締完了"> レジ締め処理の完了</label>
-    <h3 style="background:var(--ng); color:#000; padding:4px 8px; border-radius:4px;">🔒 最終確認（最重要！）</h3>
+    <h3 style="background:var(--ng); color:#000; padding:4px 8px; border-radius:4px;">🔒 最終確認</h3>
     <label style="border:2px solid var(--ng); font-weight:bold;">
       <input type="checkbox" value="入口ドアの施錠確認"> 1F 入口ドアの施錠（指差し確認）
     </label>
@@ -124,13 +124,17 @@ input[type="checkbox"]{transform:scale(1.2);margin-right:8px;}
 </main>
 
 <script>
-/* 🔑 1. パスワード認証ロジック */
-const STAFF_PASS = "spec1234"; 
+/* 🔑 1. 認証ロジック */
+const STAFF_PASS = "Spec884"; // 新しいパスワード
 
 function checkAuth() {
-  const input = document.getElementById('pass-input').value;
-  if (input === STAFF_PASS) {
-    localStorage.setItem('spec_check_auth', 'granted'); // 認証済を記憶
+  const passInput = document.getElementById('pass-input').value;
+  const nameInput = document.getElementById('staff-name-input').value;
+  
+  if (passInput === STAFF_PASS) {
+    localStorage.setItem('spec_check_auth', 'granted');
+    localStorage.setItem('staffName', nameInput); // 名前を保存
+    document.getElementById('name').value = nameInput; // メイン画面に反映
     document.getElementById('auth-overlay').style.display = 'none';
   } else {
     const err = document.getElementById('auth-error');
@@ -139,26 +143,26 @@ function checkAuth() {
   }
 }
 
-/* 2. 初期化処理（パスワード・名前の復元） */
+/* 2. 初期化処理 */
 window.addEventListener('DOMContentLoaded', () => {
-  // パスワードチェック
-  if (localStorage.getItem('spec_check_auth') === 'granted') {
-    document.getElementById('auth-overlay').style.display = 'none';
-  }
-  
-  // 名前の復元
+  const isAuth = localStorage.getItem('spec_check_auth');
   const savedName = localStorage.getItem('staffName');
-  if (savedName) {
-    document.getElementById('name').value = savedName;
+  
+  if (isAuth === 'granted') {
+    document.getElementById('auth-overlay').style.display = 'none';
+    if (savedName) {
+      document.getElementById('name').value = savedName;
+      document.getElementById('staff-name-input').value = savedName;
+    }
+  } else {
+    // 未認証時でも保存された名前があれば入力欄に入れておく
+    if (savedName) {
+      document.getElementById('staff-name-input').value = savedName;
+    }
   }
 });
 
-// 名前の自動保存
-document.getElementById('name').addEventListener('input', (e) => {
-  localStorage.setItem('staffName', e.target.value);
-});
-
-/* 3. 既存の業務ロジック */
+/* 3. 業務ロジック */
 let mode = '開店';
 
 function setMode(m) {
@@ -171,16 +175,11 @@ function setMode(m) {
 }
 
 function calc() {
-  const n10000 = (Number(document.getElementById('n10000').value) || 0) * 10000;
-  const n5000  = (Number(document.getElementById('n5000').value) || 0) * 5000;
-  const n1000  = (Number(document.getElementById('n1000').value) || 0) * 1000;
-  const n500   = (Number(document.getElementById('n500').value) || 0) * 500;
-  const n100   = (Number(document.getElementById('n100').value) || 0) * 100;
-  const n50    = (Number(document.getElementById('n50').value) || 0) * 50;
-  const n10    = (Number(document.getElementById('n10').value) || 0) * 10;
-  const n5     = (Number(document.getElementById('n5').value) || 0) * 5;
-  const n1     = (Number(document.getElementById('n1').value) || 0) * 1;
-  const total = n10000 + n5000 + n1000 + n500 + n100 + n50 + n10 + n5 + n1;
+  const denoms = [10000, 5000, 1000, 500, 100, 50, 10, 5, 1];
+  let total = 0;
+  denoms.forEach(v => {
+    total += (Number(document.getElementById('n' + v).value) || 0) * v;
+  });
   const isOk = (total === 30000);
   const res = document.getElementById('cashResult');
   res.textContent = `合計：${total.toLocaleString()} 円 ${isOk ? '（基準一致）' : '（不一致）'}`;
@@ -189,30 +188,34 @@ function calc() {
 
 async function sendMail(){
   const name = document.getElementById('name').value.trim();
-  if(!name) return alert('氏名を入力してください');
+  if(!name) return alert('ログイン画面で名前を入力してください');
+  
   const cashText = document.getElementById('cashResult').textContent;
   const comment = document.getElementById('comment').value;
   const checks = [...document.querySelectorAll(`#${mode==='開店'?'open':'close'}Section input`)].map(c => {
     return (c.checked ? '✅ [済] ' : '❌ [未] ') + c.value;
   }).join('\n');
-  const denoms = [
-    {label: '10,000円', id: 'n10000'}, {label: '5,000円', id: 'n5000'}, {label: '1,000円', id: 'n1000'},
-    {label: '500円', id: 'n500'}, {label: '100円', id: 'n100'}, {label: '50円', id: 'n50'},
-    {label: '10円', id: 'n10'}, {label: '5円', id: 'n5'}, {label: '1円', id: 'n1'}
-  ].map(d => `${d.label}: ${document.getElementById(d.id).value || 0} 枚`).join('\n');
-  if(mode === '開店' && !cashText.includes('基準一致')) return alert('開店時は釣り銭を3万円に合わせてください');
+
   const btn = document.getElementById('sendBtn');
   btn.disabled = true; btn.textContent = '送信中...';
+
   try {
     const res = await fetch('/api/report', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ mode, name, checks, cashText, comment, denominations: denoms })
+      body: JSON.stringify({ mode, name, checks, cashText, comment })
     });
-    if(res.ok) { alert('報告を送信しました。'); location.reload(); } 
-    else { alert('送信エラーが発生しました。'); }
-  } catch(e) { alert('通信に失敗しました。'); } 
-  finally { btn.disabled = false; btn.textContent = '報告を送信'; }
+    if(res.ok) { 
+      alert('報告を送信しました。お疲れ様でした！'); 
+      location.reload(); 
+    } else { 
+      alert('送信エラーが発生しました。'); 
+    }
+  } catch(e) {
+    alert('通信に失敗しました。');
+  } finally {
+    btn.disabled = false; btn.textContent = '報告を送信';
+  }
 }
 </script>
 </body>
