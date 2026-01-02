@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>SPEC-OPS｜Bar SPEC</title>
 
-  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/png" href="/icon-32.png" sizes="32x32"> <link rel="icon" type="image/png" href="/icon-192.png" sizes="192x192"> <link rel="apple-touch-icon" href="/icon-180.png"> <link rel="manifest" href="/manifest.json">
+
   <meta name="theme-color" content="#c5a059">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="SPEC-OPS">
-  <link rel="apple-touch-icon" href="/icon-180.png">
 
   <style>
     :root{ 
@@ -22,7 +22,6 @@
     body{ margin:0; font-family:sans-serif; background:var(--bg); color:var(--text); padding-bottom: calc(80px + var(--safe-bottom)); line-height: 1.6; }
     *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
 
-    /* スピンボタン（矢印）を消去 */
     input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     input[type=number] { -moz-appearance: textfield; }
 
@@ -40,13 +39,11 @@
     h2 { font-size: 13px; color: var(--accent); border-left: 3px solid var(--accent); padding-left: 10px; margin-bottom: 15px; text-transform: uppercase; }
     .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin-bottom: 15px; }
 
-    /* 金種入力グリッド */
     .cash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .cash-item { display: flex; align-items: center; justify-content: space-between; background: #000; padding: 10px; border-radius: 8px; border: 1px solid #222; }
     .cash-item span { font-size: 13px; color: var(--muted); }
     .cash-item input { width: 70px; background: transparent; border: none; color: #fff; font-size: 18px; text-align: right; outline: none; }
     
-    /* チェックリスト */
     label { display:flex; align-items:center; margin:12px 0; font-size:14px; cursor: pointer; }
     input[type="checkbox"] { transform:scale(1.4); margin-right: 12px; }
     textarea { width:100%; padding:12px; border-radius:10px; border:1px solid #333; background:#000; color:var(--text); font-size:16px; outline: none; margin-top:10px;}
@@ -184,31 +181,22 @@ function switchView(view) {
   document.getElementById('report-view').classList.toggle('hidden', view !== 'report');
   document.getElementById('tabManual').classList.toggle('active', view === 'manual');
   document.getElementById('tabReport').classList.toggle('active', view === 'report');
-  
   const tabReport = document.getElementById('tabReport');
-  if(view === 'report' && currentMode === '閉店') {
-    tabReport.classList.add('close-tab');
-  } else {
-    tabReport.classList.remove('close-tab');
-  }
+  if(view === 'report' && currentMode === '閉店') { tabReport.classList.add('close-tab'); } else { tabReport.classList.remove('close-tab'); }
   window.scrollTo(0,0);
 }
 
 function setMode(m) {
-  currentMode = m;
-  const isOpen = (m === '開店');
+  currentMode = m; const isOpen = (m === '開店');
   document.getElementById('openSection').classList.toggle('hidden', !isOpen);
   document.getElementById('closeSection').classList.toggle('hidden', isOpen);
-  
   const btnOpen = document.getElementById('btnOpenMode');
   const btnClose = document.getElementById('btnCloseMode');
   const tabReport = document.getElementById('tabReport');
-  
   btnOpen.style.background = isOpen ? 'var(--accent)' : 'var(--panel2)';
   btnOpen.style.color = isOpen ? '#000' : '#888';
   btnClose.style.background = isOpen ? 'var(--panel2)' : 'var(--blue)';
   btnClose.style.color = isOpen ? '#fff' : '#000';
-  
   document.body.style.background = isOpen ? 'var(--bg)' : '#0b1020';
   tabReport.classList.toggle('close-tab', !isOpen);
 }
@@ -228,21 +216,14 @@ async function sendMail(){
   const checks = Array.from(checkboxes).map(c => (c.checked ? '✅ [済] ' : '❌ [未] ') + c.value).join('\n');
   const cashText = document.getElementById('cashResult').textContent;
   const comment = document.getElementById('comment').value;
-
   const denoms = [10000, 5000, 1000, 500, 100, 50, 10, 5, 1];
   const d = denoms.map(v => `${v}円:${document.getElementById('n'+v).value || 0}枚`);
   const denominations = `${d[0]}, ${d[1]}, ${d[2]}\n${d[3]}, ${d[4]}, ${d[5]}\n${d[6]}, ${d[7]}, ${d[8]}`;
-
   const btn = document.getElementById('sendBtn'); btn.disabled = true; btn.textContent = '送信中...';
   try {
-    const res = await fetch('/api/report', {
-      method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ mode: currentMode, name, checks, cashText, comment, denominations })
-    });
-    if(res.ok) { alert('報告を送信しました。'); location.reload(); }
-    else { const err = await res.json(); alert(err.error); }
-  } catch(e) { alert('通信失敗'); }
-  finally { btn.disabled = false; btn.textContent = '報告を送信'; }
+    const res = await fetch('/api/report', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ mode: currentMode, name, checks, cashText, comment, denominations }) });
+    if(res.ok) { alert('報告を送信しました。'); location.reload(); } else { const err = await res.json(); alert(err.error); }
+  } catch(e) { alert('通信失敗'); } finally { btn.disabled = false; btn.textContent = '報告を送信'; }
 }
 
 window.onload = () => {
