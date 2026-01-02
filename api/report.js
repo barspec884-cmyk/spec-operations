@@ -13,10 +13,10 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ error: '入力内容が不足しています' });
     }
 
-    // 「基準一致」が含まれていない場合は不一致とみなす
+    // 「基準一致」が含まれていない場合は不一致と判定
     const isMatch = cashText.includes('基準一致');
     
-    // 【修正】開店時でも送信を止めない。不一致なら一律で警告件名にする
+    // 【重要修正】開店時でも送信を止めない。不一致なら一律で件名に警告を付ける
     const isAlert = !isMatch;
     const alertPrefix = isAlert ? "【要確認・金額不一致】" : "";
 

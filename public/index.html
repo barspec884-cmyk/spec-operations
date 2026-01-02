@@ -70,8 +70,7 @@
       <h2>発注 & 緊急連絡</h2>
       <div class="card">
         <div class="info-box"><b>カクヤス (当日21時迄):</b> <span class="code-val">0570-200-919</span><br><b>店舗コード:</b> <span class="code-val">679383</span></div>
-        <div class="info-box">
-          <b>氷（中央冷凍）: LINE発注</b><br>
+        <div class="info-box"><b>氷（中央冷凍）: LINE発注</b><br>
           <ul style="margin:5px 0; padding-left:18px;">
             <li>キングアイス：2単位</li>
             <li>ダイヤアイス：1単位</li>
@@ -88,7 +87,7 @@
   </div>
 
   <div id="view-report" class="hidden">
-    <div class="card"><div style="display:flex; gap:8px;"><button id="btnOpenMode" onclick="setMode('開店')" style="flex:1; padding:10px; border-radius:8px; border:none; background:var(--accent); font-weight:bold;">開店</button><button id="btnCloseMode" onclick="setMode('閉店')" style="flex:1; padding:10px; border-radius:8px; border:none; background:var(--panel2); color:#fff; font-weight:bold;">閉店</button></div></div>
+    <div class="card"><div style="display:flex; gap:8px;"><button id="btnOpenMode" onclick="setMode('開店')" style="flex:1; padding:10px; border-radius:8px; border:none; background:var(--accent); font-weight:bold; cursor: pointer;">開店</button><button id="btnCloseMode" onclick="setMode('閉店')" style="flex:1; padding:10px; border-radius:8px; border:none; background:var(--panel2); color:#fff; font-weight:bold; cursor: pointer;">閉店</button></div></div>
     
     <div id="openSection" class="card">
       <h2>開店チェック項目</h2>
@@ -165,8 +164,6 @@ function switchView(view) {
   document.getElementById('view-report').classList.toggle('hidden', view !== 'report');
   document.getElementById('tabInfo').classList.toggle('active', view === 'info');
   document.getElementById('tabReport').classList.toggle('active', view === 'report');
-  if(view === 'report' && currentMode === '閉店') document.getElementById('tabReport').classList.add('close-tab');
-  else document.getElementById('tabReport').classList.remove('close-tab');
 }
 
 function setMode(m) {
@@ -176,7 +173,6 @@ function setMode(m) {
   document.getElementById('btnOpenMode').style.background = isOpen ? 'var(--accent)' : 'var(--panel2)';
   document.getElementById('btnCloseMode').style.background = isOpen ? 'var(--panel2)' : 'var(--blue)';
   document.body.classList.toggle('close-mode', !isOpen);
-  document.getElementById('tabReport').classList.toggle('close-tab', !isOpen);
 }
 
 function calc() {
@@ -194,9 +190,13 @@ async function sendMail(){
   const checks = Array.from(checkboxes).map(c => (c.checked ? '✅ [済] ' : '❌ [未] ') + c.value).join('\n');
   const cashText = document.getElementById('cashResult').textContent;
   const comment = document.getElementById('comment').value;
+
+  // 金種内訳の整形（3つずつ改行を入れる）
   const denoms = [10000, 5000, 1000, 500, 100, 50, 10, 5, 1];
-  const denominations = denoms.map(v => `${v}円:${document.getElementById('n'+v).value || 0}枚`).join(', ');
-  if (Array.from(checkboxes).filter(c => c.checked).length === 0) { return alert('チェック項目を一つも選択していません！'); }
+  const d = denoms.map(v => `${v}円:${document.getElementById('n'+v).value || 0}枚`);
+  const denominations = `${d[0]}, ${d[1]}, ${d[2]}\n${d[3]}, ${d[4]}, ${d[5]}\n${d[6]}, ${d[7]}, ${d[8]}`;
+
+  if (Array.from(checkboxes).filter(c => c.checked).length === 0) { return alert('項目をチェックしてください！'); }
   const btn = document.getElementById('sendBtn'); btn.disabled = true; btn.textContent = '送信中...';
   try {
     const res = await fetch('/api/report', {
