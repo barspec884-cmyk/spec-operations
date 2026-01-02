@@ -2,81 +2,95 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-  <title>SPEC-OPERATIONS｜Bar SPEC</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>SPEC-OPS｜Bar SPEC</title>
+
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#c5a059">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="SPEC-OPS">
+  <link rel="apple-touch-icon" href="/icon-180.png">
+
   <style>
-    :root {
-      --bg-open:#0e0c0a; --bg-close:#0b1020; --panel:#181512; --panel2:#25211e;
-      --accent:#c5a059; --text:#f4ead7; --muted:#c9b89b;
-      --line:rgba(197,160,89,0.2); --ok:#8fd19e; --ng:#ff8f8f; --todo:#ffcc00; --blue:#7da7ff;
+    :root{ 
+      --bg:#0e0c0a; --panel:#1c1915; --panel2:#25211e;
+      --accent:#c5a059; --text:#f4f4f4; --muted:#a89984;
+      --line:rgba(197,160,89,0.2); --standard:#ef4444; --todo: #ffcc00; --ok:#8fd19e; --ng:#ff8f8f; --blue:#7da7ff;
+      --safe-top: env(safe-area-inset-top);
+      --safe-bottom: env(safe-area-inset-bottom);
     }
-    body { margin:0; font-family:sans-serif; background:var(--bg-open); color:var(--text); transition: background 0.3s; padding-bottom: 100px; }
-    body.close-mode { background: var(--bg-close); }
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    #auth-overlay { position: fixed; inset: 0; background: var(--bg-open); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-    .auth-input { width: 280px; padding: 15px; background: #000; border: 1px solid var(--accent); border-radius: 10px; color: #fff; font-size: 18px; text-align: center; margin-bottom: 15px; outline: none; }
-    header { padding:14px; text-align:center; font-weight:800; background:#1c1814; border-bottom:1px solid rgba(255,255,255,0.1); color:var(--accent); letter-spacing:2px; }
-    main { padding:16px; max-width:600px; margin: 0 auto; }
-    .card { background:var(--panel); border-radius:14px; padding:16px; margin-bottom:16px; border:1px solid rgba(255,255,255,0.05); }
-    h2 { font-size:13px; margin:0 0 12px; color:var(--accent); border-left:3px solid var(--accent); padding-left:10px; text-transform:uppercase; }
-    .info-box { background:rgba(197,160,89,0.1); border:1px dashed var(--accent); padding:12px; border-radius:8px; margin:10px 0; font-size:13px; }
-    .code-val { font-family:monospace; color:var(--accent); font-weight:bold; background:#000; padding:2px 5px; border-radius:4px; font-size:15px; }
+    body{ margin:0; font-family:sans-serif; background:var(--bg); color:var(--text); padding-bottom: calc(80px + var(--safe-bottom)); line-height: 1.6; }
+    *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+
+    /* Layout & Tabs */
+    .sticky-header { position: sticky; top: 0; z-index: 1000; background: rgba(14, 12, 10, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); padding-top: var(--safe-top); }
+    header { padding: 10px 15px; display: flex; align-items: center; justify-content: space-between; height: 50px; }
+    .logo { font-size: 16px; font-weight: 800; letter-spacing: 2px; color: var(--accent); }
+    .view-tabs { display: flex; gap: 6px; padding: 0 10px 10px; }
+    .tab-btn { flex: 1; padding: 10px 0; text-align: center; background: var(--panel2); border: 1px solid var(--line); color: #888; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 11px; }
+    .tab-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+    .tab-btn.active.close-tab { background: var(--blue); }
+
+    main{ padding: 15px; max-width: 600px; margin: 0 auto; }
+    section { margin-bottom: 30px; }
+    h2 { font-size: 13px; color: var(--accent); border-left: 3px solid var(--accent); padding-left: 10px; margin-bottom: 15px; text-transform: uppercase; }
+    .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin-bottom: 15px; }
+
+    /* Report Grid & Inputs */
     .cash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .cash-item { display: flex; align-items: center; justify-content: space-between; background: #000; padding: 10px; border-radius: 8px; border: 1px solid #222; }
     .cash-item input { width: 60px; background: transparent; border: none; color: #fff; font-size: 16px; text-align: right; outline: none; }
-    .tabs { display:flex; gap:8px; margin-bottom:16px; position:sticky; top:10px; z-index:100; }
-    .tab { flex:1; padding:12px; text-align:center; border-radius:12px; background:#000; color:var(--muted); cursor:pointer; font-weight:600; font-size:12px; }
-    .tab.active { background:var(--accent); color:#000; }
-    .tab.active.close-tab { background:var(--blue); color:#000; }
-    label { display:flex; align-items:center; margin:12px 0; font-size:14px; cursor: pointer; }
+    label { display:flex; align-items:center; margin:10px 0; font-size:14px; cursor: pointer; }
     input[type="checkbox"] { transform:scale(1.3); margin-right:12px; }
-    textarea { width:100%; padding:12px; border-radius:10px; border:1px solid #333; background:#000; color:var(--text); font-size:16px; outline: none; }
-    button.send-btn { width:100%; padding:18px; border-radius:14px; border:none; font-size:16px; font-weight:800; background:var(--accent); color:#000; cursor:pointer; margin-top:20px; }
-    .hidden { display:none; }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    textarea { width:100%; padding:12px; border-radius:10px; border:1px solid #333; background:#000; color:var(--text); font-size:16px; outline: none; margin-top:10px;}
+    .send-btn { width:100%; padding:18px; border-radius:14px; border:none; font-size:16px; font-weight:800; background:var(--accent); color:#000; cursor:pointer; margin-top:20px; }
+
+    /* Info Styles */
+    .info-box { background: rgba(197,160,89,0.1); border: 1px dashed var(--accent); padding: 12px; border-radius: 8px; margin: 10px 0; font-size: 13px; }
+    .code-val { font-family: monospace; color: var(--accent); font-weight: bold; background: #000; padding: 2px 5px; border-radius: 4px; }
+    .hidden { display: none !important; }
     .welcome-anim { animation: fadeInUp 0.8s ease-out forwards; text-align: center; margin-bottom: 20px; color: var(--accent); }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     .tuesday-alert { color: var(--todo); font-weight: bold; border: 1px dashed var(--todo); padding: 5px 10px; border-radius: 4px; display: inline-block; margin-top: 10px; font-size: 13px; }
   </style>
 </head>
 <body>
 
-<div id="auth-overlay">
-  <div style="font-size: 24px; margin-bottom: 20px; color:var(--accent); font-weight: 800; letter-spacing:4px;">SPEC-OPS</div>
-  <input type="text" id="staff-name-input" class="auth-input" placeholder="名前を入力">
-  <input type="password" id="pass-input" class="auth-input" placeholder="Password">
-  <button onclick="checkAuth()" style="width:280px; padding:15px; border-radius:10px; border:none; background:var(--accent); font-weight:bold; cursor: pointer;">ENTER SYSTEM</button>
+<div id="auth-overlay" style="position:fixed; inset:0; background:var(--bg); z-index:9999; display:flex; align-items:center; justify-content:center; flex-direction:column; padding:20px;">
+  <div class="logo" style="font-size: 24px; margin-bottom: 20px;">SPEC-OPS</div>
+  <input type="text" id="staff-name-input" placeholder="スタッフ名" class="auth-input" style="width:280px; padding:15px; background:var(--panel); border:1px solid var(--line); border-radius:10px; color:#fff; text-align:center; margin-bottom:15px; outline:none;">
+  <input type="password" id="pass-input" placeholder="Password" class="auth-input" style="width:280px; padding:15px; background:var(--panel); border:1px solid var(--accent); border-radius:10px; color:#fff; text-align:center; margin-bottom:15px; outline:none;">
+  <button onclick="checkAuth()" style="width:280px; padding:15px; background:var(--accent); border:none; border-radius:10px; font-weight:bold;">ENTER SYSTEM</button>
 </div>
 
-<header>SPEC-OPERATIONS</header>
+<div class="sticky-header">
+  <header><div class="logo">SPEC-OPS</div><div class="ver">v1.1</div></header>
+  <div class="view-tabs">
+    <div class="tab-btn active" onclick="switchView('manual')">Manual</div>
+    <div id="tabReport" class="tab-btn" onclick="switchView('report')">Report</div>
+    <div class="tab-btn" onclick="switchView('theory')">Theory</div>
+    <div class="tab-btn" onclick="switchView('cocktail')">Menu</div>
+  </div>
+</div>
 
 <main>
   <div id="welcome-message" style="display:none;"></div>
-  <div class="tabs">
-    <div id="tabInfo" class="tab active" onclick="switchView('info')">MANUAL</div>
-    <div id="tabReport" class="tab" onclick="switchView('report')">REPORT</div>
-  </div>
 
-  <div id="view-info">
+  <div id="manual-view">
     <section>
       <h2>業務フロー & 料金体系</h2>
       <div class="card">
         <div class="info-box"><b>Happy Hour (18-19):</b> No Charge / お通し無料<br><b>Bar Time (19-):</b> Charge ¥1,000</div>
         <ul style="padding-left:15px; font-size:13px; color:var(--muted);">
           <li style="color:var(--todo); font-weight:bold;">火曜日限定：おしぼりを出す</li>
-          <li>入店時：ハリのある声で挨拶</li>
-          <li>見送り：入口まで。最高に良い印象を</li>
+          <li>挨拶：ハリのある声で「いらっしゃいませ」</li>
+          <li>見送り：入口まで見送り、最高に良い印象を</li>
         </ul>
       </div>
-      <h2>発注 & 緊急連絡</h2>
+      <h2>発注 & 連絡先</h2>
       <div class="card">
         <div class="info-box"><b>カクヤス (当日21時迄):</b> <span class="code-val">0570-200-919</span><br><b>店舗コード:</b> <span class="code-val">679383</span></div>
-        <div class="info-box"><b>氷（中央冷凍）: LINE発注</b><br>
-          <ul style="margin:5px 0; padding-left:18px;">
-            <li>キングアイス：2単位</li>
-            <li>ダイヤアイス：1単位</li>
-            <li>丸氷(ボール) 60㎜：3単位</li>
-            <li>丸氷(ボール) 70㎜：2単位</li>
-          </ul>
+        <div class="info-box"><b>氷（中央冷凍）: LINE発注</b><br>キング2 / ダイヤ1 / 丸(60)3 / 丸(70)2<br>
           <div style="margin-top:8px; padding-top:8px; border-top:1px dashed var(--line); color:var(--accent); font-weight:bold;">
             💡 2階の冷凍在庫を上記になる様に持って降りたら発注
           </div>
@@ -86,11 +100,11 @@
     </section>
   </div>
 
-  <div id="view-report" class="hidden">
-    <div class="card"><div style="display:flex; gap:8px;"><button id="btnOpenMode" onclick="setMode('開店')" style="flex:1; padding:10px; border-radius:8px; border:none; background:var(--accent); font-weight:bold; cursor: pointer;">開店</button><button id="btnCloseMode" onclick="setMode('閉店')" style="flex:1; padding:10px; border-radius:8px; border:none; background:var(--panel2); color:#fff; font-weight:bold; cursor: pointer;">閉店</button></div></div>
+  <div id="report-view" class="hidden">
+    <div class="card"><div style="display:flex; gap:8px;"><button id="btnOpenMode" onclick="setMode('開店')" style="flex:1; padding:10px; border-radius:8px; border:none; background:var(--accent); font-weight:bold;">開店</button><button id="btnCloseMode" onclick="setMode('閉店')" style="flex:1; padding:10px; border-radius:8px; border:none; background:var(--panel2); color:#fff; font-weight:bold;">閉店</button></div></div>
     
     <div id="openSection" class="card">
-      <h2>開店チェック項目</h2>
+      <h2>開店チェック</h2>
       <label><input type="checkbox" value="2F トイレ・床・鏡"> 2F トイレ・床・鏡</label>
       <label><input type="checkbox" value="2F テーブル・椅子"> 2F テーブル・椅子</label>
       <label><input type="checkbox" value="2F 備品・menu"> 2F 備品・menuチェック</label>
@@ -102,7 +116,7 @@
     </div>
 
     <div id="closeSection" class="card hidden">
-      <h2>閉店チェック項目</h2>
+      <h2>閉店チェック</h2>
       <label style="color:var(--ng); font-weight:bold;"><input type="checkbox" value="2F エアコンOFF"> 3F 2階 エアコンOFF</label>
       <label><input type="checkbox" value="1F エアコンOFF"> 1階 エアコンOFF</label>
       <label><input type="checkbox" value="看板の収納"> 看板を中に戻した</label>
@@ -110,29 +124,34 @@
       <label><input type="checkbox" value="カーテンを下ろす"> ロールスクリーンを下ろした</label>
       <label><input type="checkbox" value="戸棚の戸締まり"> 戸棚をきっちり閉めた</label>
       <label><input type="checkbox" value="ウォーマーOFF"> おしぼりウォーマーOFF</label>
-      <label><input type="checkbox" value="照明・食洗機電源"> 照明消灯・食洗機等の確認</label>
+      <label><input type="checkbox" value="照明・食洗機電源"> 照明消灯・食洗機等確認</label>
       <label><input type="checkbox" value="レジ締完了"> レジ締め処理の完了</label>
-      <label style="border:2px solid var(--ng); padding:8px; border-radius:8px;"><input type="checkbox" value="入口ドア施錠確認"> 1F 入口施錠（指差し確認）</label>
+      <label style="border:2px solid var(--ng); padding:8px; border-radius:8px;"><input type="checkbox" value="入口ドア施錠確認"> 1F 入口施錠（指差し）</label>
     </div>
 
     <div class="card">
       <h2>金種チェック（準備金：3万円）</h2>
       <div class="cash-grid">
-        <div class="cash-item"><span>10,000円</span><input type="number" id="n10000" oninput="calc()"></div>
-        <div class="cash-item"><span>5,000円</span><input type="number" id="n5000" oninput="calc()"></div>
-        <div class="cash-item"><span>1,000円</span><input type="number" id="n1000" oninput="calc()"></div>
-        <div class="cash-item"><span>500円</span><input type="number" id="n500" oninput="calc()"></div>
-        <div class="cash-item"><span>100円</span><input type="number" id="n100" oninput="calc()"></div>
-        <div class="cash-item"><span>50円</span><input type="number" id="n50" oninput="calc()"></div>
-        <div class="cash-item"><span>10円</span><input type="number" id="n10" oninput="calc()"></div>
-        <div class="cash-item"><span>5円</span><input type="number" id="n5" oninput="calc()"></div>
-        <div class="cash-item"><span>1円</span><input type="number" id="n1" oninput="calc()"></div>
+        <div class="cash-item"><span>1万</span><input type="number" id="n10000" oninput="calc()"></div>
+        <div class="cash-item"><span>5千</span><input type="number" id="n5000" oninput="calc()"></div>
+        <div class="cash-item"><span>千</span><input type="number" id="n1000" oninput="calc()"></div>
+        <div class="cash-item"><span>500</span><input type="number" id="n500" oninput="calc()"></div>
+        <div class="cash-item"><span>100</span><input type="number" id="n100" oninput="calc()"></div>
+        <div class="cash-item"><span>50</span><input type="number" id="n50" oninput="calc()"></div>
+        <div class="cash-item"><span>10</span><input type="number" id="n10" oninput="calc()"></div>
+        <div class="cash-item"><span>5</span><input type="number" id="n5" oninput="calc()"></div>
+        <div class="cash-item"><span>1</span><input type="number" id="n1" oninput="calc()"></div>
       </div>
       <p id="cashResult" style="text-align:center; margin-top:15px; font-size:18px; font-weight:bold;">合計：0 円</p>
     </div>
-    <div class="card"><textarea id="comment" rows="3" placeholder="連絡事項・割れ物等"></textarea></div>
-    <button id="sendBtn" class="send-btn" onclick="sendMail()">報告を送信</button>
+    <div class="card">
+      <textarea id="comment" rows="3" placeholder="連絡事項・割れ物等"></textarea>
+      <button id="sendBtn" class="send-btn" onclick="sendMail()">報告を送信</button>
+    </div>
   </div>
+
+  <div id="theory-view" class="hidden"><section><h2>📚 Theory</h2><div class="card">レシピ構築、比率の方程式など</div></section></div>
+  <div id="cocktail-view" class="hidden"><section><h2>🍸 Menu</h2><div class="card">カクテル・フードレシピ</div></section></div>
 </main>
 
 <script>
@@ -143,27 +162,32 @@ function checkAuth() {
   const p = document.getElementById('pass-input').value;
   const n = document.getElementById('staff-name-input').value;
   if (p === STAFF_PASS) {
-    localStorage.setItem('spec_check_auth', 'granted');
-    localStorage.setItem('staffName', n);
+    localStorage.setItem('spec_auth_granted', 'true');
+    localStorage.setItem('spec_staff_name', n);
     document.getElementById('auth-overlay').style.display = 'none';
     displayWelcome(n);
-  } else { alert('Authentication Failed'); }
+  } else { alert('Failed'); }
 }
 
 function displayWelcome(name) {
   const msgEl = document.getElementById('welcome-message'); if (!name) return;
   const now = new Date(); const days = ['日','月','火','水','木','金','土'];
-  const messages = ["今日も頑張っていきましょう！","ガッツリ儲けていきましょう！💰","最高の一杯をお客さまに！🍸","SPEC-OPS 起動。","今日もおもてなし、楽しみましょう！","カウンターの主役はあなたです！","笑顔で最高な一日にしましょう！"];
+  const messages = ["今日も頑張っていきましょう！","ガッツリ儲けていきましょう！💰","最高の一杯をお客さまに！🍸","SPEC-OPS 起動。","今日もおもてなし！","笑顔で最高な一日に！"];
   let html = `<div class="welcome-anim"><small>${now.getMonth()+1}/${now.getDate()}(${days[now.getDay()]})</small><br><strong>お疲れ様です、${name}さん。</strong><br>${messages[Math.floor(Math.random()*messages.length)]}</div>`;
-  if (now.getDay() === 2) html += `<div class="welcome-anim tuesday-alert">⚠️ 火曜日：おしぼり準備！</div>`;
+  if (now.getDay() === 2) html += `<div class="welcome-anim tuesday-alert">⚠️ 本日は火曜日です：おしぼり準備！</div>`;
   msgEl.innerHTML = html; msgEl.style.display = 'block';
 }
 
 function switchView(view) {
-  document.getElementById('view-info').classList.toggle('hidden', view !== 'info');
-  document.getElementById('view-report').classList.toggle('hidden', view !== 'report');
-  document.getElementById('tabInfo').classList.toggle('active', view === 'info');
-  document.getElementById('tabReport').classList.toggle('active', view === 'report');
+  const views = ['manual', 'report', 'theory', 'cocktail'];
+  const tabs = document.querySelectorAll('.tab-btn');
+  views.forEach((v, i) => {
+    document.getElementById(v + '-view').classList.toggle('hidden', v !== view);
+    tabs[i].classList.toggle('active', v === view);
+  });
+  if(view === 'report' && currentMode === '閉店') tabs[1].classList.add('close-tab');
+  else tabs[1].classList.remove('close-tab');
+  window.scrollTo(0,0);
 }
 
 function setMode(m) {
@@ -172,7 +196,8 @@ function setMode(m) {
   document.getElementById('closeSection').classList.toggle('hidden', isOpen);
   document.getElementById('btnOpenMode').style.background = isOpen ? 'var(--accent)' : 'var(--panel2)';
   document.getElementById('btnCloseMode').style.background = isOpen ? 'var(--panel2)' : 'var(--blue)';
-  document.body.classList.toggle('close-mode', !isOpen);
+  document.body.style.background = isOpen ? 'var(--bg)' : '#0b1020';
+  document.getElementById('tabReport').classList.toggle('close-tab', !isOpen);
 }
 
 function calc() {
@@ -184,36 +209,37 @@ function calc() {
 }
 
 async function sendMail(){
-  const name = localStorage.getItem('staffName');
+  const name = localStorage.getItem('spec_staff_name');
   const sectionId = (currentMode === '開店') ? 'openSection' : 'closeSection';
   const checkboxes = document.querySelectorAll(`#${sectionId} input[type="checkbox"]`);
   const checks = Array.from(checkboxes).map(c => (c.checked ? '✅ [済] ' : '❌ [未] ') + c.value).join('\n');
   const cashText = document.getElementById('cashResult').textContent;
   const comment = document.getElementById('comment').value;
 
-  // 金種内訳の整形（3つずつ改行を入れる）
   const denoms = [10000, 5000, 1000, 500, 100, 50, 10, 5, 1];
   const d = denoms.map(v => `${v}円:${document.getElementById('n'+v).value || 0}枚`);
   const denominations = `${d[0]}, ${d[1]}, ${d[2]}\n${d[3]}, ${d[4]}, ${d[5]}\n${d[6]}, ${d[7]}, ${d[8]}`;
 
-  if (Array.from(checkboxes).filter(c => c.checked).length === 0) { return alert('項目をチェックしてください！'); }
   const btn = document.getElementById('sendBtn'); btn.disabled = true; btn.textContent = '送信中...';
   try {
     const res = await fetch('/api/report', {
       method: 'POST', headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ mode: currentMode, name, checks, cashText, comment, denominations })
     });
-    if(res.ok) { alert('報告を送信しました。お疲れ様でした！'); location.reload(); }
+    if(res.ok) { alert('報告を送信しました。'); location.reload(); }
     else { const err = await res.json(); alert(err.error); }
-  } catch(e) { alert('通信に失敗しました。'); }
+  } catch(e) { alert('通信失敗'); }
   finally { btn.disabled = false; btn.textContent = '報告を送信'; }
 }
 
 window.onload = () => {
-  const isAuth = localStorage.getItem('spec_check_auth');
-  const name = localStorage.getItem('staffName');
-  if(isAuth === 'granted') { document.getElementById('auth-overlay').style.display='none'; displayWelcome(name); }
+  const isAuth = localStorage.getItem('spec_auth_granted');
+  const savedName = localStorage.getItem('spec_staff_name');
+  if (isAuth === 'true') { document.getElementById('auth-overlay').style.display = 'none'; displayWelcome(savedName); }
+  if (savedName) { document.getElementById('staff-name-input').value = savedName; }
 };
+
+if ("serviceWorker" in navigator) { navigator.serviceWorker.register("/sw.js"); }
 </script>
 </body>
 </html>
