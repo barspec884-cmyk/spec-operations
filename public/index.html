@@ -5,10 +5,27 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>業務チェック｜Bar SPEC</title>
 <style>
+/* 既存のスタイル */
 :root{--bg-open:#0e0c0a;--bg-close:#0b1020;--panel:#181512;--text:#f4ead7;--muted:#c9b89b;--amber:#d7b274;--blue:#7da7ff;--ok:#8fd19e;--ng:#ff8f8f;}
 *{box-sizing:border-box}
 body{margin:0;font-family:sans-serif;background:var(--bg-open);color:var(--text);transition:background .3s;}
 body.close{background:var(--bg-close)}
+
+/* 🔑 パスワード画面用の追加スタイル */
+#auth-overlay {
+  position:fixed; top:0; left:0; width:100%; height:100%; 
+  background:var(--bg-open); z-index:9999; 
+  display:flex; flex-direction:column; align-items:center; justify-content:center; 
+  padding:20px; text-align:center;
+}
+.auth-box { width:100%; max-width:300px; }
+.auth-input { 
+  width:100%; padding:15px; background:#000; border:1px solid var(--amber); 
+  border-radius:10px; color:#fff; font-size:18px; margin-bottom:15px; 
+  text-align:center; outline:none;
+}
+
+/* 既存のレイアウト */
 header{padding:14px;text-align:center;font-weight:600;background:#1c1814;border-bottom:1px solid #ffffff22;}
 main{padding:16px}
 .card{background:var(--panel);border-radius:14px;padding:16px;margin-bottom:16px;}
@@ -27,6 +44,16 @@ input[type="checkbox"]{transform:scale(1.2);margin-right:8px;}
 </style>
 </head>
 <body>
+
+<div id="auth-overlay">
+  <div class="auth-box">
+    <div style="font-size: 20px; margin-bottom: 20px; color:var(--amber);">STAFF ONLY</div>
+    <input type="password" id="pass-input" class="auth-input" placeholder="Password">
+    <button onclick="checkAuth()">認証して進む</button>
+    <p id="auth-error" style="color:var(--ng); margin-top:15px; visibility:hidden;">パスワードが違います</p>
+  </div>
+</div>
+
 <header>Bar SPEC 業務チェック</header>
 <main>
   <div class="card">
@@ -39,66 +66,57 @@ input[type="checkbox"]{transform:scale(1.2);margin-right:8px;}
     <div id="tabClose" class="tab" onclick="setMode('閉店')">閉店</div>
   </div>
 
-<div id="openSection" class="card">
-  <h2>開店チェック項目</h2>
-  <h3>2階</h3>
-  <label><input type="checkbox" value="2F トイレ・床・鏡"> トイレ・床・鏡</label>
-  <label><input type="checkbox" value="2F テーブル・椅子"> テーブル・椅子</label>
-  <label><input type="checkbox" value="2F 備品・menu"> 備品・menuチェック</label>
+  <div id="openSection" class="card">
+    <h2>開店チェック項目</h2>
+    <h3>2階</h3>
+    <label><input type="checkbox" value="2F トイレ・床・鏡"> トイレ・床・鏡</label>
+    <label><input type="checkbox" value="2F テーブル・椅子"> テーブル・椅子</label>
+    <label><input type="checkbox" value="2F 備品・menu"> 備品・menuチェック</label>
+    <h3>1階・共通</h3>
+    <label><input type="checkbox" value="1F トイレ・床・鏡"> 1F トイレ・床・鏡</label>
+    <label><input type="checkbox" value="1F カウンター・床"> カウンター・床</label>
+    <label><input type="checkbox" value="1F キッチン・バックバー"> キッチン・バックバー</label>
+    <label><input type="checkbox" value="階段・エントランス"> 階段・エントランス</label>
+    <label><input type="checkbox" value="レジ・在庫確認"> レジ・在庫確認</label>
+  </div>
 
-  <h3>1階・共通</h3>
-  <label><input type="checkbox" value="1F トイレ・床・鏡"> 1F トイレ・床・鏡</label>
-  <label><input type="checkbox" value="1F カウンター・床"> カウンター・床</label>
-  <label><input type="checkbox" value="1F キッチン・バックバー"> キッチン・バックバー</label>
-  <label><input type="checkbox" value="階段・エントランス"> 階段・エントランス</label>
-  <label><input type="checkbox" value="レジ・在庫確認"> レジ・在庫確認</label>
-</div>
+  <div id="closeSection" class="card hidden">
+    <h2>閉店チェック項目</h2>
+    <h3>❄️3階・ 2階</h3>
+    <label style="color:var(--ng); font-weight:bold;"><input type="checkbox" value="2F エアコンOFF">3階 2階 エアコンOFF</label>
+    <h3>🪧 外回り・備品</h3>
+    <label><input type="checkbox" value="看板の収納"> 看板を中に戻した</label>
+    <label><input type="checkbox" value="マットの収納"> 外マットを中に戻した</label>
+    <label><input type="checkbox" value="カーテンを下ろす"> ロールスクリーンを下ろした</label>
+    <label><input type="checkbox" value="戸棚の戸締まり"> 戸棚をきっちり閉めた</label>
+    <h3>🔌 設備・キッチン</h3>
+    <label><input type="checkbox" value="ウォーマーOFF"> おしぼりウォーマーOFF</label>
+    <label><input type="checkbox" value="照明・食洗機電源"> 照明消灯・食洗機等の確認</label>
+    <label><input type="checkbox" value="1F エアコンOFF"> 1階 エアコンOFF</label>
+    <h3>💰 事務</h3>
+    <label><input type="checkbox" value="レジ締完了"> レジ締め処理の完了</label>
+    <h3 style="background:var(--ng); color:#000; padding:4px 8px; border-radius:4px;">🔒 最終確認（最重要！）</h3>
+    <label style="border:2px solid var(--ng); font-weight:bold;">
+      <input type="checkbox" value="入口ドアの施錠確認"> 1F 入口ドアの施錠（指差し確認）
+    </label>
+  </div>
 
-<div id="closeSection" class="card hidden">
-  <h2>閉店チェック項目</h2>
-  
-  <h3>❄️3階・ 2階（忘れ物注意！）</h3>
-  <label style="color:var(--ng); font-weight:bold;"><input type="checkbox" value="2F エアコンOFF">3階 2階 エアコンOFF</label>
-  
-  <h3>🪧 外回り・備品</h3>
-  <label><input type="checkbox" value="看板の収納"> 看板を中に戻した</label>
-  <label><input type="checkbox" value="マットの収納"> 外マットを中に戻した</label>
-  <label><input type="checkbox" value="カーテンを下ろす"> ロールスクリーンを下ろした</label>
-  <label><input type="checkbox" value="戸棚の戸締まり"> 戸棚をきっちり閉めた</label>
-
-  <h3>🔌 設備・キッチン</h3>
-  <label><input type="checkbox" value="ウォーマーOFF"> おしぼりウォーマーOFF</label>
-  <label><input type="checkbox" value="照明・食洗機電源"> 照明消灯・食洗機等の確認</label>
-  <label><input type="checkbox" value="1F エアコンOFF"> 1階 エアコンOFF</label>
-
-  <h3>💰 事務</h3>
-  <label><input type="checkbox" value="レジ締完了"> レジ締め処理の完了</label>
-
-  <h3 style="background:var(--ng); color:#000; padding:4px 8px; border-radius:4px;">🔒 最終確認（最重要！）</h3>
-  <label style="border:2px solid var(--ng); font-weight:bold;">
-    <input type="checkbox" value="入口ドアの施錠確認"> 1F 入口ドアの施錠（指差し確認）
-  </label>
-</div>
   <div class="card">
     <h2>釣り銭チェック（合計3万円）</h2>
-    <h3>紙幣（枚数）</h3>
     <label>10,000円 × <input type="number" id="n10000" value="0" min="0" oninput="calc()"></label>
     <label>5,000円 × <input type="number" id="n5000" value="0" min="0" oninput="calc()"></label>
     <label>1,000円 × <input type="number" id="n1000" value="0" min="0" oninput="calc()"></label>
-    
-    <h3>硬貨（枚数）</h3>
     <label>500円 × <input type="number" id="n500" value="0" min="0" oninput="calc()"></label>
     <label>100円 × <input type="number" id="n100" value="0" min="0" oninput="calc()"></label>
     <label>50円 × <input type="number" id="n50" value="0" min="0" oninput="calc()"></label>
     <label>10円 × <input type="number" id="n10" value="0" min="0" oninput="calc()"></label>
     <label>5円 × <input type="number" id="n5" value="0" min="0" oninput="calc()"></label>
     <label>1円 × <input type="number" id="n1" value="0" min="0" oninput="calc()"></label>
-
     <p id="cashResult">合計：0 円</p>
   </div>
 
   <div class="card">
-    <h2>コメント（不一致時は理由を記入）</h2>
+    <h2>コメント</h2>
     <textarea id="comment" rows="3" placeholder="連絡事項があれば記入"></textarea>
   </div>
 
@@ -106,6 +124,41 @@ input[type="checkbox"]{transform:scale(1.2);margin-right:8px;}
 </main>
 
 <script>
+/* 🔑 1. パスワード認証ロジック */
+const STAFF_PASS = "spec1234"; 
+
+function checkAuth() {
+  const input = document.getElementById('pass-input').value;
+  if (input === STAFF_PASS) {
+    localStorage.setItem('spec_check_auth', 'granted'); // 認証済を記憶
+    document.getElementById('auth-overlay').style.display = 'none';
+  } else {
+    const err = document.getElementById('auth-error');
+    err.style.visibility = 'visible';
+    setTimeout(() => { err.style.visibility = 'hidden'; }, 2000);
+  }
+}
+
+/* 2. 初期化処理（パスワード・名前の復元） */
+window.addEventListener('DOMContentLoaded', () => {
+  // パスワードチェック
+  if (localStorage.getItem('spec_check_auth') === 'granted') {
+    document.getElementById('auth-overlay').style.display = 'none';
+  }
+  
+  // 名前の復元
+  const savedName = localStorage.getItem('staffName');
+  if (savedName) {
+    document.getElementById('name').value = savedName;
+  }
+});
+
+// 名前の自動保存
+document.getElementById('name').addEventListener('input', (e) => {
+  localStorage.setItem('staffName', e.target.value);
+});
+
+/* 3. 既存の業務ロジック */
 let mode = '開店';
 
 function setMode(m) {
@@ -117,7 +170,6 @@ function setMode(m) {
   document.body.className = (m === '閉店' ? 'close' : '');
 }
 
-// すべての金種を計算する関数
 function calc() {
   const n10000 = (Number(document.getElementById('n10000').value) || 0) * 10000;
   const n5000  = (Number(document.getElementById('n5000').value) || 0) * 5000;
@@ -128,11 +180,9 @@ function calc() {
   const n10    = (Number(document.getElementById('n10').value) || 0) * 10;
   const n5     = (Number(document.getElementById('n5').value) || 0) * 5;
   const n1     = (Number(document.getElementById('n1').value) || 0) * 1;
-
   const total = n10000 + n5000 + n1000 + n500 + n100 + n50 + n10 + n5 + n1;
   const isOk = (total === 30000);
   const res = document.getElementById('cashResult');
-  
   res.textContent = `合計：${total.toLocaleString()} 円 ${isOk ? '（基準一致）' : '（不一致）'}`;
   res.style.color = isOk ? 'var(--ok)' : 'var(--ng)';
 }
@@ -140,61 +190,30 @@ function calc() {
 async function sendMail(){
   const name = document.getElementById('name').value.trim();
   if(!name) return alert('氏名を入力してください');
-  
   const cashText = document.getElementById('cashResult').textContent;
   const comment = document.getElementById('comment').value;
-
-  // 【修正】チェック状況：[済] または [未] を付けて全項目送る
   const checks = [...document.querySelectorAll(`#${mode==='開店'?'open':'close'}Section input`)].map(c => {
     return (c.checked ? '✅ [済] ' : '❌ [未] ') + c.value;
   }).join('\n');
-
-  // 【修正】金種の内訳をテキスト化して収集
   const denoms = [
     {label: '10,000円', id: 'n10000'}, {label: '5,000円', id: 'n5000'}, {label: '1,000円', id: 'n1000'},
     {label: '500円', id: 'n500'}, {label: '100円', id: 'n100'}, {label: '50円', id: 'n50'},
     {label: '10円', id: 'n10'}, {label: '5円', id: 'n5'}, {label: '1円', id: 'n1'}
   ].map(d => `${d.label}: ${document.getElementById(d.id).value || 0} 枚`).join('\n');
-
-  // バリデーション（警告は出すが、送信自体は止めないように後ほど調整可能）
   if(mode === '開店' && !cashText.includes('基準一致')) return alert('開店時は釣り銭を3万円に合わせてください');
-
   const btn = document.getElementById('sendBtn');
   btn.disabled = true; btn.textContent = '送信中...';
-
   try {
     const res = await fetch('/api/report', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      // 【修正】denominations (denoms) を追加して送信
       body: JSON.stringify({ mode, name, checks, cashText, comment, denominations: denoms })
     });
-    const data = await res.json();
-    if(res.ok) { 
-      alert('報告を送信しました。お疲れ様でした！'); 
-      location.reload(); 
-    } else { 
-      alert('エラー: ' + data.error); 
-    }
-  } catch(e) {
-    alert('サーバーとの通信に失敗しました。');
-  } finally {
-    btn.disabled = false; btn.textContent = '報告を送信';
-  }
+    if(res.ok) { alert('報告を送信しました。'); location.reload(); } 
+    else { alert('送信エラーが発生しました。'); }
+  } catch(e) { alert('通信に失敗しました。'); } 
+  finally { btn.disabled = false; btn.textContent = '報告を送信'; }
 }
-// 1. ページ読み込み時に保存された名前を復元
-window.addEventListener('DOMContentLoaded', () => {
-  const savedName = localStorage.getItem('staffName');
-  if (savedName) {
-    document.getElementById('name').value = savedName;
-  }
-});
-
-// 2. 名前が入力されるたびに保存
-document.getElementById('name').addEventListener('input', (e) => {
-  localStorage.setItem('staffName', e.target.value);
-});
-
 </script>
 </body>
 </html>
