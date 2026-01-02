@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>SPEC-OPS｜Bar SPEC</title>
 
-<link rel="icon" type="image/png" href="/icon-192.png?v=2" sizes="192x192"> 
-<link rel="apple-touch-icon" href="/icon-180.png?v=2"> 
-<link rel="manifest" href="/manifest.json?v=2">
+  <link rel="icon" type="image/png" href="/icon-192.png?v=2" sizes="192x192"> 
+  <link rel="apple-touch-icon" href="/icon-180.png?v=2"> 
+  <link rel="manifest" href="/manifest.json?v=2">
 
   <meta name="theme-color" content="#c5a059">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -49,7 +49,9 @@
     label { display:flex; align-items:center; margin:12px 0; font-size:14px; cursor: pointer; }
     input[type="checkbox"] { transform:scale(1.4); margin-right: 12px; }
     textarea { width:100%; padding:12px; border-radius:10px; border:1px solid #333; background:#000; color:var(--text); font-size:16px; outline: none; margin-top:10px;}
-    .send-btn { width:100%; padding:18px; border-radius:14px; border:none; font-size:16px; font-weight:800; background:var(--accent); color:#000; cursor:pointer; margin-top:20px; }
+    .send-btn { width:100%; padding:18px; border-radius:14px; border:none; font-size:16px; font-weight:800; background:var(--accent); color:#000; cursor:pointer; margin-top:20px; transition: opacity 0.2s; }
+    .send-btn:active { opacity: 0.7; }
+    .send-btn:disabled { background: var(--muted); cursor: not-allowed; }
 
     .info-box { background: rgba(197,160,89,0.1); border: 1px dashed var(--accent); padding: 12px; border-radius: 8px; margin: 10px 0; font-size: 13px; }
     .code-val { font-family: monospace; color: var(--accent); font-weight: bold; background: #000; padding: 2px 5px; border-radius: 4px; }
@@ -155,9 +157,11 @@
 </main>
 
 <script>
+// --- 設定 ---
 const STAFF_PASS = "spec1234";
 let currentMode = '開店';
 
+// --- 認証機能 ---
 function checkAuth() {
   const p = document.getElementById('pass-input').value;
   const n = document.getElementById('staff-name-input').value;
@@ -166,52 +170,85 @@ function checkAuth() {
     localStorage.setItem('spec_staff_name', n);
     document.getElementById('auth-overlay').style.display = 'none';
     displayWelcome(n);
-  } else { alert('Failed'); }
+  } else { alert('認証失敗：パスワードが違います'); }
 }
 
+// --- ウェルカムメッセージ表示 ---
 function displayWelcome(name) {
-  const msgEl = document.getElementById('welcome-message'); if (!name) return;
+  const msgEl = document.getElementById('welcome-message'); 
+  if (!name) return;
   const now = new Date(); const days = ['日','月','火','水','木','金','土'];
   const messages = ["今日も頑張っていきましょう！","ガッツリ儲けていきましょう！💰","最高の一杯をお客さまに！🍸","SPEC-OPS 起動。","今日もおもてなし！","笑顔で最高な一日に！"];
+  
   let html = `<div class="welcome-anim"><small>${now.getMonth()+1}/${now.getDate()}(${days[now.getDay()]})</small><br><strong>お疲れ様です、${name}さん。</strong><br>${messages[Math.floor(Math.random()*messages.length)]}</div>`;
-  if (now.getDay() === 2) html += `<div class="welcome-anim tuesday-alert">⚠️ 本日は火曜日です：おしぼり準備！</div>`;
-  msgEl.innerHTML = html; msgEl.style.display = 'block';
+  
+  // 火曜日の特別アラート
+  if (now.getDay() === 2) {
+    html += `<div class="welcome-anim tuesday-alert">⚠️ 本日は火曜日です：おしぼり準備！忘れずに</div>`;
+  }
+  
+  msgEl.innerHTML = html; 
+  msgEl.style.display = 'block';
 }
 
+// --- 画面切り替え ---
 function switchView(view) {
   document.getElementById('manual-view').classList.toggle('hidden', view !== 'manual');
   document.getElementById('report-view').classList.toggle('hidden', view !== 'report');
   document.getElementById('tabManual').classList.toggle('active', view === 'manual');
   document.getElementById('tabReport').classList.toggle('active', view === 'report');
+  
   const tabReport = document.getElementById('tabReport');
-  if(view === 'report' && currentMode === '閉店') { tabReport.classList.add('close-tab'); } else { tabReport.classList.remove('close-tab'); }
+  if(view === 'report' && currentMode === '閉店') { 
+    tabReport.classList.add('close-tab'); 
+  } else { 
+    tabReport.classList.remove('close-tab'); 
+  }
   window.scrollTo(0,0);
 }
 
+// --- 開店/閉店モード切替 ---
 function setMode(m) {
-  currentMode = m; const isOpen = (m === '開店');
+  currentMode = m; 
+  const isOpen = (m === '開店');
   document.getElementById('openSection').classList.toggle('hidden', !isOpen);
   document.getElementById('closeSection').classList.toggle('hidden', isOpen);
+  
   const btnOpen = document.getElementById('btnOpenMode');
   const btnClose = document.getElementById('btnCloseMode');
   const tabReport = document.getElementById('tabReport');
+  
   btnOpen.style.background = isOpen ? 'var(--accent)' : 'var(--panel2)';
   btnOpen.style.color = isOpen ? '#000' : '#888';
   btnClose.style.background = isOpen ? 'var(--panel2)' : 'var(--blue)';
   btnClose.style.color = isOpen ? '#fff' : '#000';
+  
+  // 閉店モード時は背景を少し青っぽくして視覚的に分かりやすくする
   document.body.style.background = isOpen ? 'var(--bg)' : '#0b1020';
   tabReport.classList.toggle('close-tab', !isOpen);
 }
 
+// --- 金種計算機能 ---
 function calc() {
-  const denoms = [10000, 5000, 1000, 500, 100, 50, 10, 5, 1]; let total = 0;
+  const denoms = [10000, 5000, 1000, 500, 100, 50, 10, 5, 1]; 
+  let total = 0;
   denoms.forEach(v => { total += (Number(document.getElementById('n' + v).value) || 0) * v; });
-  const isOk = (total === 30000); const res = document.getElementById('cashResult');
+  
+  // 準備金30,000円との一致チェック
+  const isOk = (total === 30000); 
+  const res = document.getElementById('cashResult');
   res.textContent = `合計：${total.toLocaleString()} 円 ${isOk ? '（基準一致）' : '（不一致）'}`;
   res.style.color = isOk ? 'var(--ok)' : 'var(--ng)';
 }
 
+// --- 送信機能 (修正済み) ---
 async function sendMail(){
+  // 1. 確認ダイアログ（誤操作防止）
+  if (!window.confirm(`${currentMode}報告を送信しますか？`)) {
+    return;
+  }
+
+  // 2. データを収集
   const name = localStorage.getItem('spec_staff_name');
   const sectionId = (currentMode === '開店') ? 'openSection' : 'closeSection';
   const checkboxes = document.querySelectorAll(`#${sectionId} input[type="checkbox"]`);
@@ -223,19 +260,53 @@ async function sendMail(){
   const d = denoms.map(v => `${v}円:${document.getElementById('n'+v).value || 0}枚`);
   const denominations = `${d[0]}, ${d[1]}, ${d[2]}\n${d[3]}, ${d[4]}, ${d[5]}\n${d[6]}, ${d[7]}, ${d[8]}`;
 
-  const btn = document.getElementById('sendBtn'); btn.disabled = true; btn.textContent = '送信中...';
+  // 3. ボタンを無効化（二重送信防止）
+  const btn = document.getElementById('sendBtn'); 
+  btn.disabled = true; 
+  btn.textContent = '送信中...';
+
   try {
-    const res = await fetch('/api/report', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ mode: currentMode, name, checks, cashText, comment, denominations }) });
-    if(res.ok) { alert('報告を送信しました。'); location.reload(); } else { const err = await res.json(); alert(err.error); }
-  } catch(e) { alert('通信失敗'); } finally { btn.disabled = false; btn.textContent = '報告を送信'; }
+    const res = await fetch('/api/report', { 
+      method: 'POST', 
+      headers: {'Content-Type': 'application/json'}, 
+      body: JSON.stringify({ mode: currentMode, name, checks, cashText, comment, denominations }) 
+    });
+
+    if (res.ok) {
+      const msg = currentMode === '開店'
+        ? '報告を送信しました。\n今日もよろしく！'
+        : '報告を送信しました。\nお疲れ様でした。';
+      alert(msg);
+      location.reload(); // 成功時のみリロード
+    } else {
+      const err = await res.json();
+      alert('エラー: ' + (err.error || '不明なエラー'));
+    }
+
+  } catch(e) { 
+    console.error(e);
+    alert('通信に失敗しました。ネットワークを確認してください。'); 
+  } finally { 
+    // エラーが起きてもボタンを元に戻す
+    btn.disabled = false; 
+    btn.textContent = '報告を送信'; 
+  }
 }
 
+// --- 初期化 ---
 window.onload = () => {
   const isAuth = localStorage.getItem('spec_auth_granted');
   const savedName = localStorage.getItem('spec_staff_name');
-  if (isAuth === 'true') { document.getElementById('auth-overlay').style.display = 'none'; displayWelcome(savedName); }
-  if (savedName) { document.getElementById('staff-name-input').value = savedName; }
+  if (isAuth === 'true') { 
+    document.getElementById('auth-overlay').style.display = 'none'; 
+    displayWelcome(savedName); 
+  }
+  if (savedName) { 
+    document.getElementById('staff-name-input').value = savedName; 
+  }
 };
+
+// PWA Service Worker (あれば)
 if ("serviceWorker" in navigator) { navigator.serviceWorker.register("/sw.js"); }
 </script>
 </body>
