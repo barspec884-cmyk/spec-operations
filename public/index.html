@@ -17,10 +17,17 @@ body.close{background:var(--bg-close)}
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   padding: 20px; text-align: center;
 }
+.auth-input-container {
+  position: relative; width: 80%; max-width: 300px; margin-bottom: 15px;
+}
 .auth-input {
-  width: 80%; max-width: 300px; padding: 15px; background: #000;
+  width: 100%; padding: 15px; background: #000;
   border: 1px solid var(--amber); border-radius: 10px; color: #fff;
-  font-size: 18px; margin-bottom: 15px; outline: none; text-align: center;
+  font-size: 18px; outline: none; text-align: center;
+}
+.toggle-eye {
+  position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+  cursor: pointer; color: var(--amber); font-size: 20px;
 }
 
 header{padding:14px;text-align:center;font-weight:600;background:#1c1814;border-bottom:1px solid #ffffff22;}
@@ -38,6 +45,12 @@ button{width:100%;padding:16px;border-radius:14px;border:none;font-size:16px;fon
 .hidden{display:none}
 #cashResult{font-weight:600;margin-top:10px;font-size:18px;}
 input[type="checkbox"]{transform:scale(1.2);margin-right:8px;}
+
+.toggle-coins {
+  background: #222; color: #888; padding: 10px; border-radius: 8px;
+  text-align: center; cursor: pointer; font-size: 13px; margin: 10px 0;
+  border: 1px dashed #444;
+}
 </style>
 </head>
 <body>
@@ -45,9 +58,14 @@ input[type="checkbox"]{transform:scale(1.2);margin-right:8px;}
 <div id="auth-overlay">
   <div style="font-size: 24px; margin-bottom: 20px; color:var(--amber); font-weight: bold;">Bar SPEC STAFF ONLY</div>
   
-  <input type="text" id="staff-name-input" class="auth-input" placeholder="名前を入力">
+  <div class="auth-input-container">
+    <input type="text" id="staff-name-input" class="auth-input" placeholder="名前を入力">
+  </div>
   
-  <input type="password" id="pass-input" class="auth-input" placeholder="Password">
+  <div class="auth-input-container">
+    <input type="password" id="pass-input" class="auth-input" placeholder="Password">
+    <span class="toggle-eye" id="eye-icon" onclick="togglePassword()">👁</span>
+  </div>
   
   <button onclick="checkAuth()" style="width:80%; max-width:300px;">ログイン</button>
   <p id="auth-error" style="color:var(--ng); margin-top:15px; visibility:hidden;">パスワードが違います</p>
@@ -58,7 +76,6 @@ input[type="checkbox"]{transform:scale(1.2);margin-right:8px;}
   <div class="card">
     <h2>担当者氏名</h2>
     <input id="name" type="text" readonly style="background:#111; color:#888;">
-    <p style="font-size:11px; color:var(--muted); margin-top:5px;">※ログイン時に入力した名前が反映されます</p>
   </div>
 
   <div class="tabs">
@@ -109,9 +126,13 @@ input[type="checkbox"]{transform:scale(1.2);margin-right:8px;}
     <label>500円 × <input type="number" id="n500" value="0" min="0" oninput="calc()"></label>
     <label>100円 × <input type="number" id="n100" value="0" min="0" oninput="calc()"></label>
     <label>50円 × <input type="number" id="n50" value="0" min="0" oninput="calc()"></label>
-    <label>10円 × <input type="number" id="n10" value="0" min="0" oninput="calc()"></label>
-    <label>5円 × <input type="number" id="n5" value="0" min="0" oninput="calc()"></label>
-    <label>1円 × <input type="number" id="n1" value="0" min="0" oninput="calc()"></label>
+    
+    <div id="toggleCoinsBtn" class="toggle-coins" onclick="toggleSmallCoins()">▼ 10円以下を入力する（必要な時のみ）</div>
+    <div id="smallCoinsArea" class="hidden">
+      <label>10円 × <input type="number" id="n10" value="0" min="0" oninput="calc()"></label>
+      <label>5円 × <input type="number" id="n5" value="0" min="0" oninput="calc()"></label>
+      <label>1円 × <input type="number" id="n1" value="0" min="0" oninput="calc()"></label>
+    </div>
     <p id="cashResult">合計：0 円</p>
   </div>
 
@@ -125,7 +146,19 @@ input[type="checkbox"]{transform:scale(1.2);margin-right:8px;}
 
 <script>
 /* 🔑 1. 認証ロジック */
-const STAFF_PASS = "Spec884"; // 新しいパスワード
+const STAFF_PASS = "spec1234";
+
+function togglePassword() {
+  const passInput = document.getElementById('pass-input');
+  const eyeIcon = document.getElementById('eye-icon');
+  if (passInput.type === 'password') {
+    passInput.type = 'text';
+    eyeIcon.innerText = '🔓';
+  } else {
+    passInput.type = 'password';
+    eyeIcon.innerText = '👁';
+  }
+}
 
 function checkAuth() {
   const passInput = document.getElementById('pass-input').value;
@@ -133,8 +166,8 @@ function checkAuth() {
   
   if (passInput === STAFF_PASS) {
     localStorage.setItem('spec_check_auth', 'granted');
-    localStorage.setItem('staffName', nameInput); // 名前を保存
-    document.getElementById('name').value = nameInput; // メイン画面に反映
+    localStorage.setItem('staffName', nameInput);
+    document.getElementById('name').value = nameInput;
     document.getElementById('auth-overlay').style.display = 'none';
   } else {
     const err = document.getElementById('auth-error');
@@ -150,16 +183,9 @@ window.addEventListener('DOMContentLoaded', () => {
   
   if (isAuth === 'granted') {
     document.getElementById('auth-overlay').style.display = 'none';
-    if (savedName) {
-      document.getElementById('name').value = savedName;
-      document.getElementById('staff-name-input').value = savedName;
-    }
-  } else {
-    // 未認証時でも保存された名前があれば入力欄に入れておく
-    if (savedName) {
-      document.getElementById('staff-name-input').value = savedName;
-    }
+    if (savedName) document.getElementById('name').value = savedName;
   }
+  if (savedName) document.getElementById('staff-name-input').value = savedName;
 });
 
 /* 3. 業務ロジック */
@@ -172,6 +198,14 @@ function setMode(m) {
   document.getElementById('openSection').classList.toggle('hidden', m !== '開店');
   document.getElementById('closeSection').classList.toggle('hidden', m !== '閉店');
   document.body.className = (m === '閉店' ? 'close' : '');
+}
+
+function toggleSmallCoins() {
+  const area = document.getElementById('smallCoinsArea');
+  const btn = document.getElementById('toggleCoinsBtn');
+  const isHidden = area.classList.contains('hidden');
+  area.classList.toggle('hidden');
+  btn.textContent = isHidden ? '▲ 10円以下を隠す' : '▼ 10円以下を入力する（必要な時のみ）';
 }
 
 function calc() {
@@ -190,9 +224,18 @@ async function sendMail(){
   const name = document.getElementById('name').value.trim();
   if(!name) return alert('ログイン画面で名前を入力してください');
   
+  // 🔍 チェック漏れ確認（バリデーション）
+  const sectionId = (mode === '開店') ? 'openSection' : 'closeSection';
+  const checkboxes = document.querySelectorAll(`#${sectionId} input[type="checkbox"]`);
+  const checkedCount = Array.from(checkboxes).filter(c => c.checked).length;
+
+  if (checkedCount === 0) {
+    return alert('チェック項目が一つも選択されていません。確認をお願いします！');
+  }
+
   const cashText = document.getElementById('cashResult').textContent;
   const comment = document.getElementById('comment').value;
-  const checks = [...document.querySelectorAll(`#${mode==='開店'?'open':'close'}Section input`)].map(c => {
+  const checks = Array.from(checkboxes).map(c => {
     return (c.checked ? '✅ [済] ' : '❌ [未] ') + c.value;
   }).join('\n');
 
@@ -206,10 +249,10 @@ async function sendMail(){
       body: JSON.stringify({ mode, name, checks, cashText, comment })
     });
     if(res.ok) { 
-      alert('報告を送信しました。お疲れ様でした！'); 
-      location.reload(); 
+      alert('報告を送信しました。お疲れ様でした！');
+      location.reload();
     } else { 
-      alert('送信エラーが発生しました。'); 
+      alert('送信エラーが発生しました。');
     }
   } catch(e) {
     alert('通信に失敗しました。');
