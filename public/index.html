@@ -137,8 +137,6 @@ function calc() {
   res.style.color = isOk ? 'var(--ok)' : 'var(--ng)';
 }
 
-// --- index.html の <script> 内、sendMail関数を以下に差し替え ---
-
 async function sendMail(){
   const name = document.getElementById('name').value.trim();
   if(!name) return alert('氏名を入力してください');
@@ -184,6 +182,19 @@ async function sendMail(){
     btn.disabled = false; btn.textContent = '報告を送信';
   }
 }
+// 1. ページ読み込み時に保存された名前を復元
+window.addEventListener('DOMContentLoaded', () => {
+  const savedName = localStorage.getItem('staffName');
+  if (savedName) {
+    document.getElementById('name').value = savedName;
+  }
+});
+
+// 2. 名前が入力されるたびに保存
+document.getElementById('name').addEventListener('input', (e) => {
+  localStorage.setItem('staffName', e.target.value);
+});
+
 </script>
 </body>
 </html>
