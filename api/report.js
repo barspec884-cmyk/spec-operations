@@ -13,15 +13,11 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ error: '入力内容が不足しています' });
     }
 
+    // 「基準一致」が含まれていない場合は不一致とみなす
     const isMatch = cashText.includes('基準一致');
     
-    // 開店時は厳格にチェック
-    if (mode === '開店' && !isMatch) {
-      return res.status(400).json({ error: '開店時の釣り銭が3万円ではありません' });
-    }
-
-    // 【修正】閉店時に不一致でもメールは送る。その代わり件名に警告を付ける
-    const isAlert = (mode === '閉店' && !isMatch);
+    // 【修正】開店時でも送信を止めない。不一致なら一律で警告件名にする
+    const isAlert = !isMatch;
     const alertPrefix = isAlert ? "【要確認・金額不一致】" : "";
 
     const resend = new Resend(process.env.RESEND_API_KEY);
@@ -34,12 +30,12 @@ module.exports = async function handler(req, res) {
             `区分：${mode}\n` +
             `担当者：${name}\n` +
             `--------------------------\n` +
-            `■チェック状況：\n${checks}\n\n` + // index.htmlで [済/未] を付けている
+            `■チェック状況：\n${checks}\n\n` +
             `■金種内訳：\n${denominations || '入力なし'}\n\n` +
             `■釣り銭合計・判定：\n${cashText}\n\n` +
             `■コメント：\n${comment || 'なし'}\n` +
             `--------------------------\n` +
-            (isAlert ? "\n※金額が基準と一致していません。コメント欄を確認してください。" : "")
+            (isAlert ? "\n※金額が基準と一致していません。内容を確認してください。" : "")
     });
 
     return res.status(200).json({ ok: true });
