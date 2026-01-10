@@ -1,0 +1,373 @@
+﻿<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>SPEC-OPS｜Bar SPEC</title>
+
+  <link rel="icon" type="image/png" href="/icon-192.png?v=2" sizes="192x192"> 
+  <link rel="apple-touch-icon" href="/icon-180.png?v=2"> 
+  <link rel="manifest" href="/manifest.json?v=2">
+
+  <meta name="theme-color" content="#c5a059">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="SPEC-OPS">
+
+  <style>
+    :root{ 
+      --bg:#0e0c0a; --panel:#1c1915; --panel2:#25211e;
+      --accent:#c5a059; --text:#f4f4f4; --muted:#a89984;
+      --line:rgba(197,160,89,0.2); --ok:#8fd19e; --ng:#ff8f8f; --todo:#ffcc00; --blue:#7da7ff;
+      --safe-top: env(safe-area-inset-top);
+      --safe-bottom: env(safe-area-inset-bottom);
+    }
+    body{ margin:0; font-family:sans-serif; background:var(--bg); color:var(--text); padding-bottom: calc(80px + var(--safe-bottom)); line-height: 1.6; }
+    *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+
+    input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    input[type=number] { -moz-appearance: textfield; }
+
+    .sticky-header { position: sticky; top: 0; z-index: 1000; background: rgba(14, 12, 10, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); padding-top: var(--safe-top); }
+    header { padding: 10px 15px; display: flex; align-items: center; justify-content: center; height: 50px; }
+    .logo { font-size: 16px; font-weight: 800; letter-spacing: 4px; color: var(--accent); }
+    
+    .view-tabs { display: flex; gap: 6px; padding: 0 10px 10px; }
+    .tab-btn { flex: 1; padding: 12px 0; text-align: center; background: var(--panel2); border: 1px solid var(--line); color: var(--muted); border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; }
+    .tab-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+    .tab-btn.active.close-tab { background: var(--blue); color: #000; }
+
+    main{ padding: 15px; max-width: 600px; margin: 0 auto; }
+    section { margin-bottom: 30px; }
+    h2 { font-size: 13px; color: var(--accent); border-left: 3px solid var(--accent); padding-left: 10px; margin-bottom: 15px; text-transform: uppercase; }
+    .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin-bottom: 15px; }
+
+    .cash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .cash-item { display: flex; align-items: center; justify-content: space-between; background: #000; padding: 10px; border-radius: 8px; border: 1px solid #222; }
+    .cash-item span { font-size: 13px; color: var(--muted); }
+    .cash-item input { width: 70px; background: transparent; border: none; color: #fff; font-size: 18px; text-align: right; outline: none; }
+    
+    label { display:flex; align-items:center; margin:12px 0; font-size:14px; cursor: pointer; }
+    input[type="checkbox"] { transform:scale(1.4); margin-right: 12px; }
+    textarea { width:100%; padding:12px; border-radius:10px; border:1px solid #333; background:#000; color:var(--text); font-size:16px; outline: none; margin-top:10px;}
+    .send-btn { width:100%; padding:18px; border-radius:14px; border:none; font-size:16px; font-weight:800; background:var(--accent); color:#000; cursor:pointer; margin-top:20px; transition: opacity 0.2s; }
+    .send-btn:active { opacity: 0.7; }
+    .send-btn:disabled { background: var(--muted); cursor: not-allowed; }
+
+    .info-box { background: rgba(197,160,89,0.1); border: 1px dashed var(--accent); padding: 12px; border-radius: 8px; margin: 10px 0; font-size: 13px; }
+    .code-val { font-family: monospace; color: var(--accent); font-weight: bold; background: #000; padding: 2px 5px; border-radius: 4px; }
+    .hidden { display: none !important; }
+    
+    .welcome-anim { text-align: center; margin-bottom: 20px; color: var(--accent); font-size: 14px; }
+    .tuesday-alert { color: var(--todo); font-weight: bold; border: 1px dashed var(--todo); padding: 5px 10px; border-radius: 4px; display: inline-block; margin-top: 10px; font-size: 13px; }
+  </style>
+</head>
+<body>
+
+<div id="auth-overlay" style="position:fixed; inset:0; background:var(--bg); z-index:9999; display:flex; align-items:center; justify-content:center; flex-direction:column; padding:20px;">
+  <div class="logo" style="font-size: 24px; margin-bottom: 20px;">SPEC-OPS</div>
+  <input type="text" id="staff-name-input" placeholder="スタッフ名" style="width:280px; padding:15px; background:var(--panel); border:1px solid var(--line); border-radius:10px; color:#fff; text-align:center; margin-bottom:15px; outline:none;">
+  <input type="password" id="pass-input" placeholder="Password" style="width:280px; padding:15px; background:var(--panel); border:1px solid var(--accent); border-radius:10px; color:#fff; text-align:center; margin-bottom:15px; outline:none;">
+  <button onclick="checkAuth()" style="width:280px; padding:15px; background:var(--accent); border:none; border-radius:10px; font-weight:bold; cursor:pointer; color:#000;">ENTER SYSTEM</button>
+</div>
+
+<div class="sticky-header">
+  <header><div class="logo">SPEC-OPS</div></header>
+  <div class="view-tabs">
+    <div id="tabReport" class="tab-btn active" onclick="switchView('report')">Report</div>
+    <div id="tabManual" class="tab-btn" onclick="switchView('manual')">Manual</div>
+  </div>
+</div>
+
+<main>
+  <div id="welcome-message" style="display:none;"></div>
+
+  <div id="report-view">
+    <div class="card"><div style="display:flex; gap:8px;"><button id="btnOpenMode" onclick="setMode('開店')" style="flex:1; padding:10px; border-radius:8px; border:none; background:var(--accent); color:#000; font-weight:bold; cursor:pointer;">開店</button><button id="btnCloseMode" onclick="setMode('閉店')" style="flex:1; padding:10px; border-radius:8px; border:none; background:var(--panel2); color:#fff; font-weight:bold; cursor:pointer;">閉店</button></div></div>
+    
+    <form id="openSection" class="card">
+      <h2>開店チェック</h2>
+
+      <fieldset class="check-group">
+        <legend>2F エリア</legend>
+        <ul>
+          <li>
+            <label>
+              <input type="checkbox" name="checks" value="2f_toilet">
+              2F トイレ・床・鏡
+            </label>
+          </li>
+          <li>
+            <label>
+              <input type="checkbox" name="checks" value="2f_tables">
+              2F テーブル・椅子
+            </label>
+          </li>
+          <li>
+            <label>
+              <input type="checkbox" name="checks" value="2f_supplies">
+              2F 備品・menuチェック
+            </label>
+          </li>
+        </ul>
+      </fieldset>
+
+      <fieldset class="check-group">
+        <legend>1F エリア</legend>
+        <ul>
+          <li>
+            <label>
+              <input type="checkbox" name="checks" value="1f_toilet">
+              1F トイレ・床・鏡
+            </label>
+          </li>
+          <li>
+            <label>
+              <input type="checkbox" name="checks" value="1f_counter">
+              1F カウンター・床
+            </label>
+          </li>
+          <li>
+            <label>
+              <input type="checkbox" name="checks" value="1f_kitchen">
+              1F キッチン・バックバー
+            </label>
+          </li>
+        </ul>
+      </fieldset>
+
+      <fieldset class="check-group">
+        <legend>共通・管理</legend>
+        <ul>
+          <li>
+            <label>
+              <input type="checkbox" name="checks" value="stairs_entrance">
+              階段・エントランス
+            </label>
+          </li>
+          <li>
+            <label>
+              <input type="checkbox" name="checks" value="haccp_done">
+              HACCP入力完了
+            </label>
+          </li>
+          <li>
+            <label>
+              <input type="checkbox" name="checks" value="register_stock">
+              レジ・在庫確認
+            </label>
+          </li>
+        </ul>
+      </fieldset>
+    </form>
+    
+    <div id="closeSection" class="card hidden">
+      <h2>閉店チェック</h2>
+      <label style="color:var(--ng); font-weight:bold;"><input type="checkbox" value="2F エアコンOFF"> 3階・2階 エアコンOFF</label>
+      <label><input type="checkbox" value="1F エアコンOFF"> 1階 エアコンOFF</label>
+      <label><input type="checkbox" value="看板の収納"> 看板を中に戻した</label>
+      <label><input type="checkbox" value="マットの収納"> 外マットを中に戻した</label>
+      <label><input type="checkbox" value="カーテンを下ろす"> ロールスクリーンを下ろした</label>
+      <label><input type="checkbox" value="戸棚の戸締まり"> 戸棚をきっちり閉めた</label>
+      <label><input type="checkbox" value="ウォーマーOFF"> おしぼりウォーマーOFF</label>
+      <label><input type="checkbox" value="照明・食洗機電源"> 照明消灯・食洗機等確認</label>
+      <label><input type="checkbox" value="ゴミ箱（満杯前処理）"> ゴミ回収・廃棄確認</label>
+      <label><input type="checkbox" value="レジ締完了"> レジ締め処理の完了</label>
+      <label style="border:2px solid var(--ng); padding:8px; border-radius:8px;"><input type="checkbox" value="入口ドア施錠（指差し）"> 1F 入口施錠（指差し）</label>
+    </div>
+
+    <div class="card">
+      <h2>金種チェック（準備金：3万円）</h2>
+      <div class="cash-grid">
+        <div class="cash-item"><span>10,000円</span><input type="number" id="n10000" oninput="calc()"></div>
+        <div class="cash-item"><span>5,000円</span><input type="number" id="n5000" oninput="calc()"></div>
+        <div class="cash-item"><span>1,000円</span><input type="number" id="n1000" oninput="calc()"></div>
+        <div class="cash-item"><span>500円</span><input type="number" id="n500" oninput="calc()"></div>
+        <div class="cash-item"><span>100円</span><input type="number" id="n100" oninput="calc()"></div>
+        <div class="cash-item"><span>50円</span><input type="number" id="n50" oninput="calc()"></div>
+        <div class="cash-item"><span>10円</span><input type="number" id="n10" oninput="calc()"></div>
+        <div class="cash-item"><span>5円</span><input type="number" id="n5" oninput="calc()"></div>
+        <div class="cash-item"><span>1円</span><input type="number" id="n1" oninput="calc()"></div>
+      </div>
+      <p id="cashResult" style="text-align:center; margin-top:15px; font-size:18px; font-weight:bold; color:var(--ng);">合計：0 円（不一致）</p>
+    </div>
+    <div class="card">
+      <textarea id="comment" rows="3" placeholder="連絡事項・割れ物等"></textarea>
+      <button id="sendBtn" class="send-btn" onclick="sendMail()">報告を送信</button>
+    </div>
+  </div>
+
+  <div id="manual-view" class="hidden">
+    <section>
+      <h2>業務フロー & 料金体系</h2>
+      <div class="card">
+        <div class="info-box"><b>Happy Hour (18-19):</b> No Charge<br><b>Bar Time (19-):</b> Charge ¥1,000</div>
+        <ul style="padding-left:15px; font-size:13px; color:var(--muted);">
+          <li style="color:var(--todo); font-weight:bold;">火曜日：おしぼりを出す</li>
+          <li>挨拶：ハリのある声で</li>
+          <li>見送り：入口まで。最高に良い印象を</li>
+        </ul>
+      </div>
+      <h2>発注 & 連絡先</h2>
+      <div class="card">
+        <div class="info-box"><b>カクヤス (当日21時迄):</b> <span class="code-val">0570-200-919</span><br><b>店舗コード:</b> <span class="code-val">679383</span></div>
+        <div class="info-box"><b>氷（中央冷凍）: LINE発注</b><br>キング2 / ダイヤ1 / 丸(60)3 / 丸(70)2<br>
+          <div style="margin-top:8px; padding-top:8px; border-top:1px dashed var(--line); color:var(--accent); font-weight:bold; font-size:12px;">
+            💡 2階の冷凍在庫を上記になる様に持って降りたら発注
+          </div>
+        </div>
+        <div class="info-box" style="border-color:var(--ng);"><b>🚨 緊急連絡先:</b> <span class="code-val">090-1882-1236</span></div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script>
+// --- 設定 ---
+const STAFF_PASS = "spec1234";
+let currentMode = '開店';
+
+// --- 認証機能 ---
+function checkAuth() {
+  const p = document.getElementById('pass-input').value;
+  const n = document.getElementById('staff-name-input').value;
+  if (p === STAFF_PASS) {
+    localStorage.setItem('spec_auth_granted', 'true');
+    localStorage.setItem('spec_staff_name', n);
+    document.getElementById('auth-overlay').style.display = 'none';
+    displayWelcome(n);
+  } else { alert('認証失敗：パスワードが違います'); }
+}
+
+// --- ウェルカムメッセージ表示 ---
+function displayWelcome(name) {
+  const msgEl = document.getElementById('welcome-message'); 
+  if (!name) return;
+  const now = new Date(); const days = ['日','月','火','水','木','金','土'];
+  const messages = ["今日も頑張っていきましょう！","ガッツリ儲けていきましょう！💰","最高の一杯をお客さまに！🍸","SPEC-OPS 起動。","今日もおもてなし！","笑顔で最高な一日に！"];
+  
+  let html = `<div class="welcome-anim"><small>${now.getMonth()+1}/${now.getDate()}(${days[now.getDay()]})</small><br><strong>お疲れ様です、${name}さん。</strong><br>${messages[Math.floor(Math.random()*messages.length)]}</div>`;
+  
+  if (now.getDay() === 2) {
+    html += `<div class="welcome-anim tuesday-alert">⚠️ 本日は火曜日です：おしぼり準備！忘れずに</div>`;
+  }
+  
+  msgEl.innerHTML = html; 
+  msgEl.style.display = 'block';
+}
+
+// --- 画面切り替え ---
+function switchView(view) {
+  document.getElementById('manual-view').classList.toggle('hidden', view !== 'manual');
+  document.getElementById('report-view').classList.toggle('hidden', view !== 'report');
+  document.getElementById('tabManual').classList.toggle('active', view === 'manual');
+  document.getElementById('tabReport').classList.toggle('active', view === 'report');
+  
+  const tabReport = document.getElementById('tabReport');
+  if(view === 'report' && currentMode === '閉店') { 
+    tabReport.classList.add('close-tab'); 
+  } else { 
+    tabReport.classList.remove('close-tab'); 
+  }
+  window.scrollTo(0,0);
+}
+
+// --- 開店/閉店モード切替 ---
+function setMode(m) {
+  currentMode = m;
+  const isOpen = (m === '開店');
+
+  document.getElementById('openSection').classList.toggle('hidden', !isOpen);
+  document.getElementById('closeSection').classList.toggle('hidden', isOpen);
+
+  const btnOpen = document.getElementById('btnOpenMode');
+  const btnClose = document.getElementById('btnCloseMode');
+  const tabReport = document.getElementById('tabReport');
+
+  btnOpen.style.background = isOpen ? 'var(--accent)' : 'var(--panel2)';
+  btnOpen.style.color = isOpen ? '#000' : '#888';
+  btnClose.style.background = isOpen ? 'var(--panel2)' : 'var(--blue)';
+  btnClose.style.color = isOpen ? '#fff' : '#000';
+
+  document.body.style.background = isOpen ? 'var(--bg)' : '#0b1020';
+  tabReport.classList.toggle('close-tab', !isOpen);
+
+  // UX：切替時は必ず上へ
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+
+// --- 金種計算機能 ---
+function calc() {
+  const denoms = [10000, 5000, 1000, 500, 100, 50, 10, 5, 1]; 
+  let total = 0;
+  denoms.forEach(v => { total += (Number(document.getElementById('n' + v).value) || 0) * v; });
+  
+  const isOk = (total === 30000); 
+  const res = document.getElementById('cashResult');
+  res.textContent = `合計：${total.toLocaleString()} 円 ${isOk ? '（基準一致）' : '（不一致）'}`;
+  res.style.color = isOk ? 'var(--ok)' : 'var(--ng)';
+}
+
+// --- 送信機能 ---
+async function sendMail(){
+  if (!window.confirm(`${currentMode}報告を送信しますか？`)) {
+    return;
+  }
+
+  const name = localStorage.getItem('spec_staff_name');
+  const sectionId = (currentMode === '開店') ? 'openSection' : 'closeSection';
+  const checkboxes = document.querySelectorAll(`#${sectionId} input[type="checkbox"]`);
+  const checks = Array.from(checkboxes).map(c => (c.checked ? '✅ [済] ' : '❌ [未] ') + c.value).join('\n');
+  const cashText = document.getElementById('cashResult').textContent;
+  const comment = document.getElementById('comment').value;
+
+  const denoms = [10000, 5000, 1000, 500, 100, 50, 10, 5, 1];
+  const d = denoms.map(v => `${v}円:${document.getElementById('n'+v).value || 0}枚`);
+  const denominations = `${d[0]}, ${d[1]}, ${d[2]}\n${d[3]}, ${d[4]}, ${d[5]}\n${d[6]}, ${d[7]}, ${d[8]}`;
+
+  const btn = document.getElementById('sendBtn'); 
+  btn.disabled = true; 
+  btn.textContent = '送信中...';
+
+  try {
+    const res = await fetch('/api/report', { 
+      method: 'POST', 
+      headers: {'Content-Type': 'application/json'}, 
+      body: JSON.stringify({ mode: currentMode, name, checks, cashText, comment, denominations }) 
+    });
+
+    if (res.ok) {
+      const msg = currentMode === '開店' ? '報告を送信しました。\n今日もよろしく！' : '報告を送信しました。\nお疲れ様でした。';
+      alert(msg);
+      location.reload(); 
+    } else {
+      const err = await res.json();
+      alert('エラー: ' + (err.error || '不明なエラー'));
+    }
+
+  } catch(e) { 
+    console.error(e);
+    alert('通信に失敗しました。ネットワークを確認してください。'); 
+  } finally { 
+    btn.disabled = false; 
+    btn.textContent = '報告を送信'; 
+  }
+}
+
+// --- 初期化 ---
+window.onload = () => {
+  const isAuth = localStorage.getItem('spec_auth_granted');
+  const savedName = localStorage.getItem('spec_staff_name');
+  if (isAuth === 'true') { 
+    document.getElementById('auth-overlay').style.display = 'none'; 
+    displayWelcome(savedName); 
+  }
+  if (savedName) { 
+    document.getElementById('staff-name-input').value = savedName; 
+  }
+};
+
+if ("serviceWorker" in navigator) { navigator.serviceWorker.register("/sw.js"); }
+</script>
+</body>
+</html>
