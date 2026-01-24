@@ -82,86 +82,66 @@
   <div id="welcome-message" style="display:none;"></div>
 
   <div id="report-view">
-    <div class="card"><div style="display:flex; gap:8px;"><button id="btnOpenMode" onclick="setMode('開店')" style="flex:1; padding:10px; border-radius:8px; border:none; background:var(--accent); color:#000; font-weight:bold; cursor:pointer;">開店</button><button id="btnCloseMode" onclick="setMode('閉店')" style="flex:1; padding:10px; border-radius:8px; border:none; background:var(--panel2); color:#fff; font-weight:bold; cursor:pointer;">閉店</button></div></div>
-    
+    <div class="card">
+      <div style="display:flex; gap:8px;">
+        <button id="btnOpenMode" onclick="setMode('開店')" style="flex:1; padding:10px; border-radius:8px; border:none; background:var(--accent); color:#000; font-weight:bold; cursor:pointer;">開店</button>
+        <button id="btnCloseMode" onclick="setMode('閉店')" style="flex:1; padding:10px; border-radius:8px; border:none; background:var(--panel2); color:#fff; font-weight:bold; cursor:pointer;">閉店</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 id="cashTitle">金種チェック（準備金：3万円）</h2>
+      <div class="cash-grid">
+        <div class="cash-item"><span>10,000円</span><input type="number" id="n10000" oninput="calc()"></div>
+        <div class="cash-item"><span>5,000円</span><input type="number" id="n5000" oninput="calc()"></div>
+        <div class="cash-item"><span>2,000円</span><input type="number" id="n2000" oninput="calc()"></div>
+        <div class="cash-item"><span>1,000円</span><input type="number" id="n1000" oninput="calc()"></div>
+        <div class="cash-item"><span>500円</span><input type="number" id="n500" oninput="calc()"></div>
+        <div class="cash-item"><span>100円</span><input type="number" id="n100" oninput="calc()"></div>
+        <div class="cash-item"><span>50円</span><input type="number" id="n50" oninput="calc()"></div>
+        <div class="cash-item"><span>10円</span><input type="number" id="n10" oninput="calc()"></div>
+        <div class="cash-item"><span>5円</span><input type="number" id="n5" oninput="calc()"></div>
+        <div class="cash-item"><span>1円</span><input type="number" id="n1" oninput="calc()"></div>
+      </div>
+      <p id="cashResult" style="text-align:center; margin-top:15px; font-size:18px; font-weight:bold; color:var(--ng);">合計：0 円（不一致）</p>
+    </div>
+
+    <div class="card">
+      <textarea id="comment" rows="3" placeholder="連絡事項・割れ物等"></textarea>
+      <button id="sendBtn" class="send-btn" onclick="sendMail()">報告を送信</button>
+      <p style="font-size:11px; color:var(--muted); text-align:center; margin-top:8px;">※先に報告を送信し、その後チェックリストに沿って作業できます。</p>
+    </div>
+
     <form id="openSection" class="card">
       <h2>開店チェック</h2>
-
       <fieldset class="check-group">
         <legend>2F エリア</legend>
         <ul>
-          <li>
-            <label>
-              <input type="checkbox" name="checks" value="2F トイレ">
-              2F トイレ・床・鏡
-            </label>
-          </li>
-          <li>
-            <label>
-              <input type="checkbox" name="checks" value="2F テーブル">
-              2F テーブル・椅子
-            </label>
-          </li>
-          <li>
-            <label>
-              <input type="checkbox" name="checks" value="2F 備品">
-              2F 備品・menuチェック
-            </label>
-          </li>
+          <li><label><input type="checkbox" name="checks" value="2F トイレ"> 2F トイレ・床・鏡</label></li>
+          <li><label><input type="checkbox" name="checks" value="2F テーブル"> 2F テーブル・椅子</label></li>
+          <li><label><input type="checkbox" name="checks" value="2F 備品"> 2F 備品・menuチェック</label></li>
         </ul>
       </fieldset>
-
       <fieldset class="check-group">
         <legend>1F エリア</legend>
         <ul>
-          <li>
-            <label>
-              <input type="checkbox" name="checks" value="1F トイレ">
-              1F トイレ・床・鏡
-            </label>
-          </li>
-          <li>
-            <label>
-              <input type="checkbox" name="checks" value="1F カウンター">
-              1F カウンター・床
-            </label>
-          </li>
-          <li>
-            <label>
-              <input type="checkbox" name="checks" value="1F キッチン">
-              1F キッチン・バックバー
-            </label>
-          </li>
+          <li><label><input type="checkbox" name="checks" value="1F トイレ"> 1F トイレ・床・鏡</label></li>
+          <li><label><input type="checkbox" name="checks" value="1F カウンター"> 1F カウンター・床</label></li>
+          <li><label><input type="checkbox" name="checks" value="1F キッチン"> 1F キッチン・バックバー</label></li>
         </ul>
       </fieldset>
-
       <fieldset class="check-group">
         <legend>共通・管理</legend>
         <ul>
-          <li>
-            <label>
-              <input type="checkbox" name="checks" value="stairs_entrance">
-              階段・エントランス
-            </label>
-          </li>
-          <li>
-            <label>
-              <input type="checkbox" name="checks" value="haccp_done">
-              HACCP入力完了
-            </label>
-          </li>
-          <li>
-            <label>
-              <input type="checkbox" name="checks" value="register_stock">
-              レジ・在庫確認
-            </label>
-          </li>
+          <li><label><input type="checkbox" name="checks" value="stairs_entrance"> 階段・エントランス</label></li>
+          <li><label><input type="checkbox" name="checks" value="haccp_done"> HACCP入力完了</label></li>
+          <li><label><input type="checkbox" name="checks" value="register_stock"> レジ・在庫確認</label></li>
         </ul>
       </fieldset>
     </form>
     
     <div id="closeSection" class="card hidden">
-      <h2>閉店チェック</h2>
+      <h2>閉店チェック（事後確認用）</h2>
       <label style="color:var(--ng); font-weight:bold;"><input type="checkbox" value="2F エアコンOFF"> 3階・2階 エアコンOFF</label>
       <label><input type="checkbox" value="1F エアコンOFF"> 1階 エアコンOFF</label>
       <label><input type="checkbox" value="看板の収納"> 看板を中に戻した</label>
@@ -174,97 +154,10 @@
       <label><input type="checkbox" value="レジ締完了"> レジ締め処理の完了</label>
       <label style="border:2px solid var(--ng); padding:8px; border-radius:8px;"><input type="checkbox" value="入口ドア施錠（指差し）"> 1F 入口施錠（指差し）</label>
     </div>
-
-    <div class="card">
-      <h2>金種チェック（準備金：3万円）</h2>
-<div class="cash-grid">
-  <div class="cash-item"><span>10,000円</span><input type="number" id="n10000" oninput="calc()"></div>
-  <div class="cash-item"><span>5,000円</span><input type="number" id="n5000" oninput="calc()"></div>
-  <div class="cash-item"><span>2,000円</span><input type="number" id="n2000" oninput="calc()"></div>
-  <div class="cash-item"><span>1,000円</span><input type="number" id="n1000" oninput="calc()"></div>
-  <div class="cash-item"><span>500円</span><input type="number" id="n500" oninput="calc()"></div>
-  <div class="cash-item"><span>100円</span><input type="number" id="n100" oninput="calc()"></div>
-  <div class="cash-item"><span>50円</span><input type="number" id="n50" oninput="calc()"></div>
-  <div class="cash-item"><span>10円</span><input type="number" id="n10" oninput="calc()"></div>
-  <div class="cash-item"><span>5円</span><input type="number" id="n5" oninput="calc()"></div>
-  <div class="cash-item"><span>1円</span><input type="number" id="n1" oninput="calc()"></div>
-</div>
-
-      <p id="cashResult" style="text-align:center; margin-top:15px; font-size:18px; font-weight:bold; color:var(--ng);">合計：0 円（不一致）</p>
-    </div>
-    <div class="card">
-      <textarea id="comment" rows="3" placeholder="連絡事項・割れ物等"></textarea>
-      <button id="sendBtn" class="send-btn" onclick="sendMail()">報告を送信</button>
-    </div>
   </div>
 
   <div id="manual-view" class="hidden">
-    <section>
-      <h2>業務フロー & 料金体系</h2>
-      <div class="card">
-        <div class="info-box"><b>Happy Hour (18-19):</b> No Charge<br><b>Bar Time (19-):</b> Charge ¥1,000</div>
-        <ul style="padding-left:15px; font-size:13px; color:var(--muted);">
-          <li style="color:var(--todo); font-weight:bold;">火曜日：おしぼりを出す</li>
-          <li>挨拶：ハリのある声で</li>
-          <li>見送り：入口まで。最高に良い印象を</li>
-        </ul>
-      </div>
-      <h2>発注 & 連絡先</h2>
-      <div class="card">
-        <div class="info-box"><b>カクヤス (当日21時迄):</b> <span class="code-val">0570-200-919</span><br><b>店舗コード:</b> <span class="code-val">679383</span></div>
-        <div class="info-box"><b>氷（中央冷凍）: LINE発注</b><br>キング2 / ダイヤ1 / 丸(60)3 / 丸(70)2<br>
-          <div style="margin-top:8px; padding-top:8px; border-top:1px dashed var(--line); color:var(--accent); font-weight:bold; font-size:12px;">
-            💡 2階の冷凍在庫を上記になる様に持って降りたら発注
-          </div>
-        </div>
-        <div class="info-box" style="border-color:var(--ng);"><b>🚨 緊急連絡先:</b> <span class="code-val">090-1882-1236</span></div>
-      </div>
-      <h2>ハウスルール (House Rules)</h2>
-      <div class="card">
-        <div class="info-box" style="border-color: var(--todo);">
-          <b>接客の基本姿勢:</b><br>
-          「付かず離れず、心地よい距離感」を維持し、お客様の会話の邪魔をしない。
-        </div>
-        <ul style="padding-left:15px; font-size:13px; color:var(--text);">
-          <li style="margin-bottom:8px;"><b>泥酔者への対応:</b><br>
-            <span style="color:var(--muted);">呂律が回っていない、千鳥足のお客様には提供を中止し、お冷を勧める。</span></li>
-          <li style="margin-bottom:8px;"><b>迷惑行為の禁止:</b><br>
-            <span style="color:var(--muted);">他のお客様への強引な話しかけや大声、ナンパは即座に注意する。</span></li>
-          <li style="margin-bottom:8px;"><b>喫煙・未成年:</b><br>
-            <span style="color:var(--muted);">店内禁煙。20歳未満の入店は原則禁止（疑わしい場合は身分証確認）。</span></li>
-        </ul>
-      </div>
-
-      <h2>勤怠・報告ルール (Working Rules)</h2>
-      <div class="card" style="border-color: var(--ng);">
-        <div class="info-box" style="background: rgba(255, 143, 143, 0.1); border-color: var(--ng); color: var(--ng);">
-          <b>⚠️ 時給に関する重要事項:</b><br>
-          やむを得ず業務が遂行できない場合は必ず報告してください。<b>報告がない場合、23:30以降の時給はカウントされません。</b>
-        </div>
-        <ul style="padding-left:15px; font-size:13px; color:var(--text);">
-          <li style="margin-bottom:8px;"><b>LINE報告の徹底:</b><br>
-            <span style="color:var(--muted);">勤怠連絡および業務終了報告は、必ず公式LINEで行ってください。</span></li>
-          <li style="margin-bottom:8px;"><b>お酒の取り扱い:</b><br>
-            <span style="color:var(--muted);">無断での試飲・提供、およびリカーの持ち込みは一切禁止です。練習や開発は事前承認を得ること。</span></li>
-          <li style="margin-bottom:8px;"><b>チップ受領時の報告:</b><br>
-            <span style="color:var(--muted);">チップを頂いた際は、必ず「誰から」「いくら」を報告してください。</span></li>
-        </ul>
-      </div>
-
-      <h2>改善・フィードバック (Feedback)</h2>
-      <div class="card" style="border-color: var(--blue);">
-        <p style="font-size:13px; color:var(--text); margin-top:0;">
-          お客様からのクレーム、不備、改善点があれば、些細なことでも伝えてください。
-        </p>
-      </div>
-      <h2>システム管理</h2>
-		
-      <div class="card" style="border-color: var(--ng);">
-        <p style="font-size:12px; color:var(--muted); margin-top:0;">動作がおかしい場合や、スタッフ交代時に押してください。</p>
-        <button onclick="logout()" style="width:100%; padding:15px; background:var(--ng); color:#fff; border:none; border-radius:10px; font-weight:bold; font-size:16px;">ログアウト / リセット</button>
-      </div>
-    </section>
-  </div>
+    </div>
 </main>
 
 <script>
