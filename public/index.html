@@ -30,13 +30,12 @@
     .code-val { font-family: monospace; color: var(--accent); font-weight: bold; background: #000; padding: 2px 5px; border-radius: 4px; }
     .cash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .cash-item { display: flex; align-items: center; justify-content: space-between; background: #000; padding: 10px; border-radius: 8px; border: 1px solid #222; }
-    .cash-item input { width: 60px; background: transparent; border: none; color: #fff; text-align: right; outline: none; font-size: 16px; }
+    .cash-item input { width: 65px; background: transparent; border: none; color: #fff; text-align: right; outline: none; font-size: 16px; }
     label { display:flex; align-items:center; margin:12px 0; font-size:14px; }
     input[type="checkbox"] { transform:scale(1.4); margin-right: 12px; }
     textarea { width:100%; padding:12px; border-radius:10px; border:1px solid #333; background:#000; color:var(--text); margin-top:10px;}
     .send-btn { width:100%; padding:18px; border-radius:14px; border:none; font-size:16px; font-weight:800; background:var(--accent); color:#000; cursor:pointer; margin-top:20px; }
     .hidden { display: none !important; }
-    .tuesday-alert { color: var(--todo); font-weight: bold; border: 1px dashed var(--todo); padding: 5px 10px; border-radius: 4px; display: inline-block; margin-top: 10px; font-size: 13px; }
   </style>
 </head>
 <body>
@@ -68,16 +67,16 @@
     <div id="openSection" class="card">
       <h2>開店チェック</h2>
       <label><input type="checkbox" value="2F トイレ・床・鏡"> 2F トイレ・床・鏡</label>
-      <label><input type="checkbox" value="2F 備品・menu"> 2F 備品・menuチェック</label>
+      <label><input type="checkbox" value="2F 備品・menuチェック"> 2F 備品・menuチェック</label>
       <label><input type="checkbox" value="1F トイレ・床・鏡"> 1F トイレ・床・鏡</label>
-      <label><input type="checkbox" value="HACCP入力"> HACCPチェック入力</label>
+      <label><input type="checkbox" value="HACCPチェック入力"> HACCPチェック入力</label>
       <label><input type="checkbox" value="レジ・在庫確認"> レジ・在庫確認</label>
     </div>
 
     <div id="closeSection" class="card hidden">
       <h2>閉店チェック（最終確認）</h2>
       <label style="color:var(--ng); font-weight:bold;"><input type="checkbox" value="2F エアコンOFF"> 3階・2階 エアコンOFF</label>
-      <label><input type="checkbox" value="看板の収納"> 看板を中に戻した</label>
+      <label><input type="checkbox" value="看板・マットの収納"> 看板・マットを中に戻した</label>
       <label><input type="checkbox" value="カーテンを下ろす"> ロールスクリーンを下ろした</label>
       <label><input type="checkbox" value="ウォーマーOFF"> おしぼりウォーマーOFF</label>
       <label><input type="checkbox" value="ゴミ箱処理"> ゴミ回収・廃棄確認</label>
@@ -85,19 +84,22 @@
     </div>
 
     <div class="card">
-      <h2>金種チェック（準備金：3万円）</h2>
+      <h2>レジ内金額（準備金：30,000円）</h2>
       <div class="cash-grid">
         <div class="cash-item"><span>1万</span><input type="number" id="n10000" oninput="calc()"></div>
         <div class="cash-item"><span>5千</span><input type="number" id="n5000" oninput="calc()"></div>
+        <div class="cash-item"><span>2千</span><input type="number" id="n2000" oninput="calc()"></div>
         <div class="cash-item"><span>千</span><input type="number" id="n1000" oninput="calc()"></div>
         <div class="cash-item"><span>5百</span><input type="number" id="n500" oninput="calc()"></div>
         <div class="cash-item"><span>百</span><input type="number" id="n100" oninput="calc()"></div>
+        <div class="cash-item"><span>50</span><input type="number" id="n50" oninput="calc()"></div>
         <div class="cash-item"><span>10</span><input type="number" id="n10" oninput="calc()"></div>
+        <div class="cash-item"><span>5</span><input type="number" id="n5" oninput="calc()"></div>
+        <div class="cash-item"><span>1</span><input type="number" id="n1" oninput="calc()"></div>
       </div>
       <p id="cashResult" style="text-align:center; margin-top:15px; font-weight:bold; color:var(--ng);">合計：0 円（不一致）</p>
       <textarea id="comment" rows="3" placeholder="連絡事項など"></textarea>
       <button id="sendBtn" class="send-btn" onclick="sendMail()">報告を送信</button>
-      <p id="sendNote" style="font-size:11px; color:var(--muted); text-align:center; margin-top:8px;">※閉店時は送信後も画面が残ります。施錠後にリセットしてください。</p>
     </div>
   </div>
 
@@ -106,7 +108,7 @@
       <h2>Manual & Contacts</h2>
       <div class="info-box"><b>Happy Hour (18-19):</b> No Charge<br><b>Bar Time (19-):</b> Charge ¥1,000</div>
       <div class="info-box"><b>カクヤス (当日21時迄):</b> <span class="code-val">0570-200-919</span><br><b>店舗コード:</b> <span class="code-val">679383</span></div>
-      <div class="info-box"><b>氷（中央冷凍）: LINE発注</b><br>💡 2階の冷凍在庫を補充したタイミングで発注。</div>
+      <div class="info-box"><b>氷（中央冷凍）: LINE発注</b><br>💡 2階の在庫を補充したタイミングで発注。</div>
       <div class="info-box" style="border-color:var(--ng);"><b>🚨 緊急連絡先:</b> <span class="code-val">090-1882-1236</span></div>
     </div>
   </div>
@@ -124,7 +126,7 @@ function checkAuth() {
     localStorage.setItem('spec_staff_name', n);
     document.getElementById('auth-overlay').style.display = 'none';
     location.reload();
-  } else { alert('認証失敗'); }
+  } else { alert('パスワードが違います'); }
 }
 
 function switchView(view) {
@@ -141,11 +143,10 @@ function setMode(m) {
   document.getElementById('closeSection').classList.toggle('hidden', isOpen);
   document.getElementById('btnOpenMode').style.background = isOpen ? 'var(--accent)' : 'var(--panel2)';
   document.getElementById('btnCloseMode').style.background = isOpen ? 'var(--panel2)' : 'var(--blue)';
-  document.getElementById('tabReport').classList.toggle('close-tab', !isOpen);
 }
 
 function calc() {
-  const denoms = [10000, 5000, 1000, 500, 100, 10];
+  const denoms = [10000, 5000, 2000, 1000, 500, 100, 50, 10, 5, 1];
   let total = 0;
   denoms.forEach(v => { total += (Number(document.getElementById('n' + v).value) || 0) * v; });
   const isOk = (total === 30000);
@@ -164,6 +165,10 @@ async function sendMail(){
     const checks = Array.from(document.querySelectorAll(`#${sectionId} input[type="checkbox"]`))
       .map(c => (c.checked ? '✅' : '❌') + ' ' + c.value).join('\n');
 
+    // 金種の内訳を作成
+    const denoms = [10000, 5000, 2000, 1000, 500, 100, 50, 10, 5, 1];
+    const denominations = denoms.map(v => `${v}円: ${document.getElementById('n' + v).value || 0}枚`).join('\n');
+
     const res = await fetch('/api/report', { 
       method: 'POST', 
       headers: {'Content-Type': 'application/json'}, 
@@ -172,17 +177,15 @@ async function sendMail(){
         name: localStorage.getItem('spec_staff_name'),
         checks: checks,
         comment: document.getElementById('comment').value,
-        cashText: document.getElementById('cashResult').textContent
+        cashText: document.getElementById('cashResult').textContent, // report.jsに合わせる
+        denominations: denominations // 内訳を送信
       }) 
     });
 
     if (res.ok) {
       alert('報告を送信しました。');
-      // 開店時は即リセット、閉店時は画面を残す
       if (currentMode === '開店') location.reload();
-    } else {
-      alert('送信エラーが発生しました。');
-    }
+    } else { alert('送信エラーが発生しました。'); }
   } catch(e) { alert('通信失敗'); }
   finally { btn.disabled = false; btn.textContent = '報告を送信'; }
 }
