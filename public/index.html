@@ -3,57 +3,39 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>SPEC-OPS｜BarSPEC</title>
-
+  <title>SPEC-OPS｜Bar SPEC</title>
   <link rel="icon" type="image/png" href="/icon-192.png?v=2" sizes="192x192"> 
   <link rel="apple-touch-icon" href="/icon-180.png?v=2"> 
   <link rel="manifest" href="/manifest.json?v=2">
-
   <meta name="theme-color" content="#c5a059">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="SPEC-OPS">
-
   <style>
     :root{ 
       --bg:#0e0c0a; --panel:#1c1915; --panel2:#25211e;
       --accent:#c5a059; --text:#f4f4f4; --muted:#a89984;
       --line:rgba(197,160,89,0.2); --ok:#8fd19e; --ng:#ff8f8f; --todo:#ffcc00; --blue:#7da7ff;
-      --safe-top: env(safe-area-inset-top);
-      --safe-bottom: env(safe-area-inset-bottom);
     }
-    body{ margin:0; font-family:sans-serif; background:var(--bg); color:var(--text); padding-bottom: calc(80px + var(--safe-bottom)); line-height: 1.6; }
-    *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
-
-    input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-    input[type=number] { -moz-appearance: textfield; }
-
-    .sticky-header { position: sticky; top: 0; z-index: 1000; background: rgba(14, 12, 10, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); padding-top: var(--safe-top); }
-    header { padding: 10px 15px; display: flex; align-items: center; justify-content: center; height: 50px; }
+    body{ margin:0; font-family:sans-serif; background:var(--bg); color:var(--text); padding-bottom: 100px; line-height: 1.6; }
+    .sticky-header { position: sticky; top: 0; z-index: 1000; background: rgba(14, 12, 10, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+    header { padding: 10px 15px; text-align: center; }
     .logo { font-size: 16px; font-weight: 800; letter-spacing: 4px; color: var(--accent); }
-    
     .view-tabs { display: flex; gap: 6px; padding: 0 10px 10px; }
     .tab-btn { flex: 1; padding: 12px 0; text-align: center; background: var(--panel2); border: 1px solid var(--line); color: var(--muted); border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; }
     .tab-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
     .tab-btn.active.close-tab { background: var(--blue); color: #000; }
-
     main{ padding: 15px; max-width: 600px; margin: 0 auto; }
-    h2 { font-size: 13px; color: var(--accent); border-left: 3px solid var(--accent); padding-left: 10px; margin-bottom: 15px; text-transform: uppercase; }
     .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin-bottom: 15px; }
-
+    h2 { font-size: 13px; color: var(--accent); border-left: 3px solid var(--accent); padding-left: 10px; margin-bottom: 15px; }
+    .info-box { background: rgba(197,160,89,0.1); border: 1px dashed var(--accent); padding: 12px; border-radius: 8px; margin: 10px 0; font-size: 13px; }
+    .code-val { font-family: monospace; color: var(--accent); font-weight: bold; background: #000; padding: 2px 5px; border-radius: 4px; }
     .cash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .cash-item { display: flex; align-items: center; justify-content: space-between; background: #000; padding: 10px; border-radius: 8px; border: 1px solid #222; }
-    .cash-item span { font-size: 13px; color: var(--muted); }
-    .cash-item input { width: 70px; background: transparent; border: none; color: #fff; font-size: 18px; text-align: right; outline: none; }
-    
-    label { display:flex; align-items:center; margin:12px 0; font-size:14px; cursor: pointer; }
+    .cash-item input { width: 60px; background: transparent; border: none; color: #fff; text-align: right; outline: none; font-size: 16px; }
+    label { display:flex; align-items:center; margin:12px 0; font-size:14px; }
     input[type="checkbox"] { transform:scale(1.4); margin-right: 12px; }
-    textarea { width:100%; padding:12px; border-radius:10px; border:1px solid #333; background:#000; color:var(--text); font-size:16px; outline: none; margin-top:10px;}
-    .send-btn { width:100%; padding:18px; border-radius:14px; border:none; font-size:16px; font-weight:800; background:var(--accent); color:#000; cursor:pointer; margin-top:20px; transition: opacity 0.2s; }
-    .send-btn:active { opacity: 0.7; }
-    .send-btn:disabled { background: var(--muted); cursor: not-allowed; }
-
+    textarea { width:100%; padding:12px; border-radius:10px; border:1px solid #333; background:#000; color:var(--text); margin-top:10px;}
+    .send-btn { width:100%; padding:18px; border-radius:14px; border:none; font-size:16px; font-weight:800; background:var(--accent); color:#000; cursor:pointer; margin-top:20px; }
     .hidden { display: none !important; }
-    .welcome-anim { text-align: center; margin-bottom: 20px; color: var(--accent); font-size: 14px; }
     .tuesday-alert { color: var(--todo); font-weight: bold; border: 1px dashed var(--todo); padding: 5px 10px; border-radius: 4px; display: inline-block; margin-top: 10px; font-size: 13px; }
   </style>
 </head>
@@ -61,9 +43,9 @@
 
 <div id="auth-overlay" style="position:fixed; inset:0; background:var(--bg); z-index:9999; display:flex; align-items:center; justify-content:center; flex-direction:column; padding:20px;">
   <div class="logo" style="font-size: 24px; margin-bottom: 20px;">SPEC-OPS</div>
-  <input type="text" id="staff-name-input" placeholder="スタッフ名" style="width:280px; padding:15px; background:var(--panel); border:1px solid var(--line); border-radius:10px; color:#fff; text-align:center; margin-bottom:15px; outline:none;">
-  <input type="password" id="pass-input" placeholder="Password" style="width:280px; padding:15px; background:var(--panel); border:1px solid var(--accent); border-radius:10px; color:#fff; text-align:center; margin-bottom:15px; outline:none;">
-  <button onclick="checkAuth()" style="width:280px; padding:15px; background:var(--accent); border:none; border-radius:10px; font-weight:bold; cursor:pointer; color:#000;">ENTER SYSTEM</button>
+  <input type="text" id="staff-name-input" placeholder="スタッフ名" style="width:280px; padding:15px; background:var(--panel); border:1px solid var(--line); border-radius:10px; color:#fff; text-align:center; margin-bottom:15px;">
+  <input type="password" id="pass-input" placeholder="Password" style="width:280px; padding:15px; background:var(--panel); border:1px solid var(--accent); border-radius:10px; color:#fff; text-align:center; margin-bottom:15px;">
+  <button onclick="checkAuth()" style="width:280px; padding:15px; background:var(--accent); border:none; border-radius:10px; font-weight:bold; color:#000;">ENTER SYSTEM</button>
 </div>
 
 <div class="sticky-header">
@@ -75,92 +57,65 @@
 </div>
 
 <main>
-  <div id="welcome-message" style="display:none;"></div>
+  <div id="welcome-message" style="display:none; text-align:center; margin-bottom:20px;"></div>
 
   <div id="report-view">
-    <div class="card">
-      <div style="display:flex; gap:8px;">
-        <button id="btnOpenMode" onclick="setMode('開店')" style="flex:1; padding:10px; border-radius:8px; border:none; background:var(--accent); color:#000; font-weight:bold; cursor:pointer;">開店</button>
-        <button id="btnCloseMode" onclick="setMode('閉店')" style="flex:1; padding:10px; border-radius:8px; border:none; background:var(--panel2); color:#fff; font-weight:bold; cursor:pointer;">閉店</button>
-      </div>
-    </div>
+    <div class="card"><div style="display:flex; gap:8px;">
+      <button id="btnOpenMode" onclick="setMode('開店')" style="flex:1; padding:10px; border-radius:8px; border:none; background:var(--accent); color:#000; font-weight:bold;">開店</button>
+      <button id="btnCloseMode" onclick="setMode('閉店')" style="flex:1; padding:10px; border-radius:8px; border:none; background:var(--panel2); color:#fff; font-weight:bold;">閉店</button>
+    </div></div>
 
-    <form id="openSection" class="card">
+    <div id="openSection" class="card">
       <h2>開店チェック</h2>
-      <fieldset class="check-group" style="border:none; padding:0; margin:0;">
-        <legend style="color:var(--muted); font-size:12px; margin-bottom:10px;">2F エリア</legend>
-        <label><input type="checkbox" name="checks" value="2F トイレ"> 2F トイレ・床・鏡</label>
-        <label><input type="checkbox" name="checks" value="2F テーブル"> 2F テーブル・椅子</label>
-        <label><input type="checkbox" name="checks" value="2F 備品"> 2F 備品・menuチェック</label>
-      </fieldset>
-      <fieldset class="check-group" style="border:none; padding:0; margin:20px 0 0;">
-        <legend style="color:var(--muted); font-size:12px; margin-bottom:10px;">1F エリア</legend>
-        <label><input type="checkbox" name="checks" value="1F トイレ"> 1F トイレ・床・鏡</label>
-        <label><input type="checkbox" name="checks" value="1F カウンター"> 1F カウンター・床</label>
-        <label><input type="checkbox" name="checks" value="1F キッチン"> 1F キッチン・バックバー</label>
-      </fieldset>
-      <fieldset class="check-group" style="border:none; padding:0; margin:20px 0 0;">
-        <legend style="color:var(--muted); font-size:12px; margin-bottom:10px;">共通・管理</legend>
-        <label><input type="checkbox" name="checks" value="stairs_entrance"> 階段・エントランス</label>
-        <label><input type="checkbox" name="checks" value="haccp_done"> HACCP入力完了</label>
-        <label><input type="checkbox" name="checks" value="register_stock"> レジ・在庫確認</label>
-      </fieldset>
-    </form>
-
-    <div id="cashSection" class="card">
-      <h2 id="cashTitle">金種チェック（準備金：3万円）</h2>
-      <div class="cash-grid">
-        <div class="cash-item"><span>10,000円</span><input type="number" id="n10000" oninput="calc()"></div>
-        <div class="cash-item"><span>5,000円</span><input type="number" id="n5000" oninput="calc()"></div>
-        <div class="cash-item"><span>2,000円</span><input type="number" id="n2000" oninput="calc()"></div>
-        <div class="cash-item"><span>1,000円</span><input type="number" id="n1000" oninput="calc()"></div>
-        <div class="cash-item"><span>500円</span><input type="number" id="n500" oninput="calc()"></div>
-        <div class="cash-item"><span>100円</span><input type="number" id="n100" oninput="calc()"></div>
-        <div class="cash-item"><span>50円</span><input type="number" id="n50" oninput="calc()"></div>
-        <div class="cash-item"><span>10円</span><input type="number" id="n10" oninput="calc()"></div>
-        <div class="cash-item"><span>5円</span><input type="number" id="n5" oninput="calc()"></div>
-        <div class="cash-item"><span>1円</span><input type="number" id="n1" oninput="calc()"></div>
-      </div>
-      <p id="cashResult" style="text-align:center; margin-top:15px; font-size:18px; font-weight:bold; color:var(--ng);">合計：0 円（不一致）</p>
-      
-      <textarea id="comment" rows="3" placeholder="連絡事項・割れ物等"></textarea>
-      <button id="sendBtn" class="send-btn" onclick="sendMail()">報告を送信</button>
-      <p id="sendNote" style="font-size:11px; color:var(--muted); text-align:center; margin-top:8px;">※閉店時は送信後も画面が残ります。3階から降りながらチェックしてください。</p>
+      <label><input type="checkbox" value="2F トイレ・床・鏡"> 2F トイレ・床・鏡</label>
+      <label><input type="checkbox" value="2F 備品・menu"> 2F 備品・menuチェック</label>
+      <label><input type="checkbox" value="1F トイレ・床・鏡"> 1F トイレ・床・鏡</label>
+      <label><input type="checkbox" value="HACCP入力"> HACCPチェック入力</label>
+      <label><input type="checkbox" value="レジ・在庫確認"> レジ・在庫確認</label>
     </div>
-    
+
     <div id="closeSection" class="card hidden">
       <h2>閉店チェック（最終確認）</h2>
       <label style="color:var(--ng); font-weight:bold;"><input type="checkbox" value="2F エアコンOFF"> 3階・2階 エアコンOFF</label>
-      <label><input type="checkbox" value="1F エアコンOFF"> 1階 エアコンOFF</label>
       <label><input type="checkbox" value="看板の収納"> 看板を中に戻した</label>
-      <label><input type="checkbox" value="マットの収納"> 外マットを中に戻した</label>
       <label><input type="checkbox" value="カーテンを下ろす"> ロールスクリーンを下ろした</label>
-      <label><input type="checkbox" value="戸棚の戸締まり"> 戸棚をきっちり閉めた</label>
       <label><input type="checkbox" value="ウォーマーOFF"> おしぼりウォーマーOFF</label>
-      <label><input type="checkbox" value="照明・食洗機電源"> 照明消灯・食洗機等確認</label>
       <label><input type="checkbox" value="ゴミ箱処理"> ゴミ回収・廃棄確認</label>
       <label style="border:2px solid var(--ng); padding:8px; border-radius:8px;"><input type="checkbox" value="1F 入口施錠"> 1F 入口施錠（指差し）</label>
-      
-      <button onclick="finalReset()" style="width:100%; padding:15px; margin-top:25px; border-radius:10px; border:none; background:var(--panel2); color:var(--accent); font-weight:bold; cursor:pointer; border:1px solid var(--line);">
-        全ての業務を終了し画面をリセット
-      </button>
+    </div>
+
+    <div class="card">
+      <h2>金種チェック（準備金：3万円）</h2>
+      <div class="cash-grid">
+        <div class="cash-item"><span>1万</span><input type="number" id="n10000" oninput="calc()"></div>
+        <div class="cash-item"><span>5千</span><input type="number" id="n5000" oninput="calc()"></div>
+        <div class="cash-item"><span>千</span><input type="number" id="n1000" oninput="calc()"></div>
+        <div class="cash-item"><span>5百</span><input type="number" id="n500" oninput="calc()"></div>
+        <div class="cash-item"><span>百</span><input type="number" id="n100" oninput="calc()"></div>
+        <div class="cash-item"><span>10</span><input type="number" id="n10" oninput="calc()"></div>
+      </div>
+      <p id="cashResult" style="text-align:center; margin-top:15px; font-weight:bold; color:var(--ng);">合計：0 円（不一致）</p>
+      <textarea id="comment" rows="3" placeholder="連絡事項など"></textarea>
+      <button id="sendBtn" class="send-btn" onclick="sendMail()">報告を送信</button>
+      <p id="sendNote" style="font-size:11px; color:var(--muted); text-align:center; margin-top:8px;">※閉店時は送信後も画面が残ります。施錠後にリセットしてください。</p>
     </div>
   </div>
 
   <div id="manual-view" class="hidden">
     <div class="card">
-      <h2>Manual</h2>
-      <p style="color:var(--muted);">ここに以前のマニュアル用HTMLを貼り付けてください。</p>
+      <h2>Manual & Contacts</h2>
+      <div class="info-box"><b>Happy Hour (18-19):</b> No Charge<br><b>Bar Time (19-):</b> Charge ¥1,000</div>
+      <div class="info-box"><b>カクヤス (当日21時迄):</b> <span class="code-val">0570-200-919</span><br><b>店舗コード:</b> <span class="code-val">679383</span></div>
+      <div class="info-box"><b>氷（中央冷凍）: LINE発注</b><br>💡 2階の冷凍在庫を補充したタイミングで発注。</div>
+      <div class="info-box" style="border-color:var(--ng);"><b>🚨 緊急連絡先:</b> <span class="code-val">090-1882-1236</span></div>
     </div>
   </div>
 </main>
 
 <script>
-// --- 基本設定 ---
 const STAFF_PASS = "spec1234";
 let currentMode = '開店';
 
-// --- 認証 ---
 function checkAuth() {
   const p = document.getElementById('pass-input').value;
   const n = document.getElementById('staff-name-input').value;
@@ -168,78 +123,43 @@ function checkAuth() {
     localStorage.setItem('spec_auth_granted', 'true');
     localStorage.setItem('spec_staff_name', n);
     document.getElementById('auth-overlay').style.display = 'none';
-    displayWelcome(n);
-  } else { alert('認証失敗：パスワードが違います'); }
+    location.reload();
+  } else { alert('認証失敗'); }
 }
 
-// --- リセット機能 ---
-function finalReset() {
-  if(!confirm('全ての業務を終了し、画面をリセットしますか？\n（翌日のスタッフのためにデータをクリアします）')) return;
-  location.reload();
-}
-
-// --- ウェルカム表示 ---
-function displayWelcome(name) {
-  const msgEl = document.getElementById('welcome-message'); 
-  if (!name) return;
-  const now = new Date();
-  const days = ['日','月','火','水','木','金','土'];
-  let html = `<div class="welcome-anim">
-    <small>${now.getMonth()+1}/${now.getDate()}(${days[now.getDay()]})</small><br>
-    <strong>お疲れ様です、${name}さん。</strong>
-  </div>`;
-  const day = now.getDay();
-  if (day === 2) html += `<div class="tuesday-alert">⚠️ 本日は火曜日です：おしぼり準備！</div>`;
-  if (day === 4) html += `<div class="tuesday-alert">⚠️ 本日は木曜日です：瓶・缶回収！</div>`;
-  msgEl.innerHTML = html; 
-  msgEl.style.display = 'block';
-}
-
-// --- 表示切替 ---
 function switchView(view) {
   document.getElementById('manual-view').classList.toggle('hidden', view !== 'manual');
   document.getElementById('report-view').classList.toggle('hidden', view !== 'report');
   document.getElementById('tabManual').classList.toggle('active', view === 'manual');
   document.getElementById('tabReport').classList.toggle('active', view === 'report');
-  window.scrollTo(0,0);
 }
 
-// --- モード切替（ここが並び順の肝） ---
 function setMode(m) {
-  currentMode = m; 
+  currentMode = m;
   const isOpen = (m === '開店');
-
   document.getElementById('openSection').classList.toggle('hidden', !isOpen);
   document.getElementById('closeSection').classList.toggle('hidden', isOpen);
-  
   document.getElementById('btnOpenMode').style.background = isOpen ? 'var(--accent)' : 'var(--panel2)';
-  document.getElementById('btnOpenMode').style.color = isOpen ? '#000' : '#888';
   document.getElementById('btnCloseMode').style.background = isOpen ? 'var(--panel2)' : 'var(--blue)';
-  document.getElementById('btnCloseMode').style.color = isOpen ? '#fff' : '#000';
-  document.body.style.background = isOpen ? 'var(--bg)' : '#0b1020';
   document.getElementById('tabReport').classList.toggle('close-tab', !isOpen);
 }
 
-// --- 金種計算 ---
 function calc() {
-  const denoms = [10000, 5000, 2000, 1000, 500, 100, 50, 10, 5, 1]; 
+  const denoms = [10000, 5000, 1000, 500, 100, 10];
   let total = 0;
   denoms.forEach(v => { total += (Number(document.getElementById('n' + v).value) || 0) * v; });
-  const isOk = (total === 30000); 
+  const isOk = (total === 30000);
   const res = document.getElementById('cashResult');
   res.textContent = `合計：${total.toLocaleString()} 円 ${isOk ? '（基準一致）' : '（不一致）'}`;
   res.style.color = isOk ? 'var(--ok)' : 'var(--ng)';
 }
 
-// --- 送信機能 ---
 async function sendMail(){
   if (!confirm(`${currentMode}報告を送信しますか？`)) return;
-
   const btn = document.getElementById('sendBtn');
   btn.disabled = true; btn.textContent = '送信中...';
 
   try {
-    // 送信データの構築（チェック項目など）
     const sectionId = (currentMode === '開店') ? 'openSection' : 'closeSection';
     const checks = Array.from(document.querySelectorAll(`#${sectionId} input[type="checkbox"]`))
       .map(c => (c.checked ? '✅' : '❌') + ' ' + c.value).join('\n');
@@ -252,29 +172,27 @@ async function sendMail(){
         name: localStorage.getItem('spec_staff_name'),
         checks: checks,
         comment: document.getElementById('comment').value,
-        cash: document.getElementById('cashResult').textContent
+        cashText: document.getElementById('cashResult').textContent
       }) 
     });
 
     if (res.ok) {
       alert('報告を送信しました。');
-      // 開店時は即リセット、閉店時はリストを見せるためリセットしない
-      if (currentMode === '開店') location.reload(); 
+      // 開店時は即リセット、閉店時は画面を残す
+      if (currentMode === '開店') location.reload();
     } else {
       alert('送信エラーが発生しました。');
     }
-  } catch(e) { 
-    alert('通信に失敗しました。'); 
-  } finally { 
-    btn.disabled = false; btn.textContent = '報告を送信'; 
-  }
+  } catch(e) { alert('通信失敗'); }
+  finally { btn.disabled = false; btn.textContent = '報告を送信'; }
 }
 
-// --- 初期化 ---
 window.onload = () => {
   if (localStorage.getItem('spec_auth_granted') === 'true') {
     document.getElementById('auth-overlay').style.display = 'none';
-    displayWelcome(localStorage.getItem('spec_staff_name'));
+    const n = localStorage.getItem('spec_staff_name');
+    document.getElementById('welcome-message').innerHTML = `<strong>お疲れ様です、${n}さん。</strong>`;
+    document.getElementById('welcome-message').style.display = 'block';
   }
 };
 </script>
