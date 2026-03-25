@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="ja">
 <head>
   <meta charset="utf-8">
@@ -35,7 +35,18 @@
     input[type="checkbox"] { transform:scale(1.4); margin-right: 12px; }
     textarea { width:100%; padding:12px; border-radius:10px; border:1px solid #333; background:#000; color:var(--text); margin-top:10px;}
     .send-btn { width:100%; padding:18px; border-radius:14px; border:none; font-size:16px; font-weight:800; background:var(--accent); color:#000; cursor:pointer; margin-top:20px; }
+    .send-btn.blue { background: var(--blue); }
     .hidden { display: none !important; }
+    .step-indicator { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 15px; font-size: 13px; }
+    .step-dot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; }
+    .step-dot.active { background: var(--blue); color: #000; }
+    .step-dot.done { background: var(--ok); color: #000; }
+    .step-dot.upcoming { background: var(--panel2); color: var(--muted); border: 1px solid var(--line); }
+    .step-line { width: 30px; height: 2px; background: var(--line); }
+    .step-label { font-size: 11px; color: var(--muted); }
+    .step-label.active { color: var(--blue); }
+    .step-label.done { color: var(--ok); }
+    .done-banner { background: rgba(143,209,158,0.15); border: 1px solid var(--ok); padding: 12px; border-radius: 8px; text-align: center; color: var(--ok); font-weight: bold; margin-bottom: 15px; }
   </style>
 </head>
 <body>
@@ -64,6 +75,7 @@
       <button id="btnCloseMode" onclick="setMode('閉店')" style="flex:1; padding:10px; border-radius:8px; border:none; background:var(--panel2); color:#fff; font-weight:bold;">閉店</button>
     </div></div>
 
+    <!-- ========== 開店モード：チェックリスト ========== -->
     <div id="openSection" class="card">
       <h2>開店チェック</h2>
       <label><input type="checkbox" value="2F トイレ・床・鏡"> 2F トイレ・床・鏡</label>
@@ -73,33 +85,76 @@
       <label><input type="checkbox" value="レジ・在庫確認"> レジ・在庫確認</label>
     </div>
 
-    <div id="closeSection" class="card hidden">
-      <h2>閉店チェック（最終確認）</h2>
-      <label style="color:var(--ng); font-weight:bold;"><input type="checkbox" value="2F エアコンOFF"> 3階・2階 エアコンOFF</label>
-      <label><input type="checkbox" value="看板・マットの収納"> 看板・マットを中に戻した</label>
-      <label><input type="checkbox" value="カーテンを下ろす"> ロールスクリーンを下ろした</label>
-      <label><input type="checkbox" value="ウォーマーOFF"> おしぼりウォーマーOFF</label>
-      <label><input type="checkbox" value="ゴミ箱処理"> ゴミ回収・廃棄確認</label>
-      <label style="border:2px solid var(--ng); padding:8px; border-radius:8px;"><input type="checkbox" value="1F 入口施錠"> 1F 入口施錠（指差し）</label>
-    </div>
-
-    <div class="card">
+    <!-- ========== 開店モード：金額＋送信 ========== -->
+    <div id="openCashSection" class="card">
       <h2>レジ内金額（準備金：30,000円）</h2>
       <div class="cash-grid">
-        <div class="cash-item"><span>1万</span><input type="number" id="n10000" oninput="calc()"></div>
-        <div class="cash-item"><span>5千</span><input type="number" id="n5000" oninput="calc()"></div>
-        <div class="cash-item"><span>2千</span><input type="number" id="n2000" oninput="calc()"></div>
-        <div class="cash-item"><span>千</span><input type="number" id="n1000" oninput="calc()"></div>
-        <div class="cash-item"><span>5百</span><input type="number" id="n500" oninput="calc()"></div>
-        <div class="cash-item"><span>百</span><input type="number" id="n100" oninput="calc()"></div>
-        <div class="cash-item"><span>50</span><input type="number" id="n50" oninput="calc()"></div>
-        <div class="cash-item"><span>10</span><input type="number" id="n10" oninput="calc()"></div>
-        <div class="cash-item"><span>5</span><input type="number" id="n5" oninput="calc()"></div>
-        <div class="cash-item"><span>1</span><input type="number" id="n1" oninput="calc()"></div>
+        <div class="cash-item"><span>1万</span><input type="number" id="o_n10000" oninput="calcOpen()"></div>
+        <div class="cash-item"><span>5千</span><input type="number" id="o_n5000" oninput="calcOpen()"></div>
+        <div class="cash-item"><span>2千</span><input type="number" id="o_n2000" oninput="calcOpen()"></div>
+        <div class="cash-item"><span>千</span><input type="number" id="o_n1000" oninput="calcOpen()"></div>
+        <div class="cash-item"><span>5百</span><input type="number" id="o_n500" oninput="calcOpen()"></div>
+        <div class="cash-item"><span>百</span><input type="number" id="o_n100" oninput="calcOpen()"></div>
+        <div class="cash-item"><span>50</span><input type="number" id="o_n50" oninput="calcOpen()"></div>
+        <div class="cash-item"><span>10</span><input type="number" id="o_n10" oninput="calcOpen()"></div>
+        <div class="cash-item"><span>5</span><input type="number" id="o_n5" oninput="calcOpen()"></div>
+        <div class="cash-item"><span>1</span><input type="number" id="o_n1" oninput="calcOpen()"></div>
       </div>
-      <p id="cashResult" style="text-align:center; margin-top:15px; font-weight:bold; color:var(--ng);">合計：0 円（不一致）</p>
-      <textarea id="comment" rows="3" placeholder="連絡事項など"></textarea>
-      <button id="sendBtn" class="send-btn" onclick="sendMail()">報告を送信</button>
+      <p id="openCashResult" style="text-align:center; margin-top:15px; font-weight:bold; color:var(--ng);">合計：0 円（不一致）</p>
+      <textarea id="openComment" rows="3" placeholder="連絡事項など"></textarea>
+      <button id="sendBtn" class="send-btn" onclick="sendOpenReport()">報告を送信</button>
+    </div>
+
+    <!-- ========== 閉店ステップ表示 ========== -->
+    <div id="closeStepIndicator" class="hidden">
+      <div class="step-indicator">
+        <div style="text-align:center;">
+          <div id="stepDot1" class="step-dot active">1</div>
+          <div id="stepLabel1" class="step-label active">レジ締め</div>
+        </div>
+        <div class="step-line"></div>
+        <div style="text-align:center;">
+          <div id="stepDot2" class="step-dot upcoming">2</div>
+          <div id="stepLabel2" class="step-label">戸締り</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 閉店 STEP1: レジ金額 ========== -->
+    <div id="closeStep1" class="hidden">
+      <div class="card">
+        <h2>STEP 1 ─ レジ締め（準備金：30,000円）</h2>
+        <div class="cash-grid">
+          <div class="cash-item"><span>1万</span><input type="number" id="n10000" oninput="calc()"></div>
+          <div class="cash-item"><span>5千</span><input type="number" id="n5000" oninput="calc()"></div>
+          <div class="cash-item"><span>2千</span><input type="number" id="n2000" oninput="calc()"></div>
+          <div class="cash-item"><span>千</span><input type="number" id="n1000" oninput="calc()"></div>
+          <div class="cash-item"><span>5百</span><input type="number" id="n500" oninput="calc()"></div>
+          <div class="cash-item"><span>百</span><input type="number" id="n100" oninput="calc()"></div>
+          <div class="cash-item"><span>50</span><input type="number" id="n50" oninput="calc()"></div>
+          <div class="cash-item"><span>10</span><input type="number" id="n10" oninput="calc()"></div>
+          <div class="cash-item"><span>5</span><input type="number" id="n5" oninput="calc()"></div>
+          <div class="cash-item"><span>1</span><input type="number" id="n1" oninput="calc()"></div>
+        </div>
+        <p id="cashResult" style="text-align:center; margin-top:15px; font-weight:bold; color:var(--ng);">合計：0 円（不一致）</p>
+        <textarea id="comment" rows="3" placeholder="連絡事項など"></textarea>
+        <button id="sendCashBtn" class="send-btn" onclick="sendCashReport()">レジ金額を送信 →</button>
+      </div>
+    </div>
+
+    <!-- ========== 閉店 STEP2: 戸締りチェック ========== -->
+    <div id="closeStep2" class="hidden">
+      <div class="done-banner">✅ レジ金額の送信が完了しました</div>
+      <div class="card">
+        <h2>STEP 2 ─ 戸締りチェック（最終確認）</h2>
+        <label style="color:var(--ng); font-weight:bold;"><input type="checkbox" value="2F エアコンOFF"> 3階・2階 エアコンOFF</label>
+        <label><input type="checkbox" value="看板・マットの収納"> 看板・マットを中に戻した</label>
+        <label><input type="checkbox" value="カーテンを下ろす"> ロールスクリーンを下ろした</label>
+        <label><input type="checkbox" value="ウォーマーOFF"> おしぼりウォーマーOFF</label>
+        <label><input type="checkbox" value="ゴミ箱処理"> ゴミ回収・廃棄確認</label>
+        <label style="border:2px solid var(--ng); padding:8px; border-radius:8px;"><input type="checkbox" value="1F 入口施錠"> 1F 入口施錠（指差し）</label>
+        <button id="sendCheckBtn" class="send-btn blue" onclick="sendCloseCheckReport()">戸締り報告を送信</button>
+      </div>
     </div>
   </div>
 
@@ -139,12 +194,32 @@ function switchView(view) {
 function setMode(m) {
   currentMode = m;
   const isOpen = (m === '開店');
+
+  // 開店セクション表示切替
   document.getElementById('openSection').classList.toggle('hidden', !isOpen);
-  document.getElementById('closeSection').classList.toggle('hidden', isOpen);
+  document.getElementById('openCashSection').classList.toggle('hidden', !isOpen);
+
+  // 閉店セクション表示切替（ステップ式）
+  document.getElementById('closeStepIndicator').classList.toggle('hidden', isOpen);
+  document.getElementById('closeStep1').classList.toggle('hidden', isOpen);
+  document.getElementById('closeStep2').classList.add('hidden');
+
+  // ステップ表示リセット
+  if (!isOpen) {
+    document.getElementById('stepDot1').className = 'step-dot active';
+    document.getElementById('stepDot2').className = 'step-dot upcoming';
+    document.getElementById('stepLabel1').className = 'step-label active';
+    document.getElementById('stepLabel2').className = 'step-label';
+  }
+
+  // ボタン色
   document.getElementById('btnOpenMode').style.background = isOpen ? 'var(--accent)' : 'var(--panel2)';
+  document.getElementById('btnOpenMode').style.color = isOpen ? '#000' : '#fff';
   document.getElementById('btnCloseMode').style.background = isOpen ? 'var(--panel2)' : 'var(--blue)';
+  document.getElementById('btnCloseMode').style.color = isOpen ? '#fff' : '#000';
 }
 
+// ========== 閉店用の金額計算 ==========
 function calc() {
   const denoms = [10000, 5000, 2000, 1000, 500, 100, 50, 10, 5, 1];
   let total = 0;
@@ -155,39 +230,119 @@ function calc() {
   res.style.color = isOk ? 'var(--ok)' : 'var(--ng)';
 }
 
-async function sendMail(){
-  if (!confirm(`${currentMode}報告を送信しますか？`)) return;
+// ========== 開店用の金額計算 ==========
+function calcOpen() {
+  const denoms = [10000, 5000, 2000, 1000, 500, 100, 50, 10, 5, 1];
+  let total = 0;
+  denoms.forEach(v => { total += (Number(document.getElementById('o_n' + v).value) || 0) * v; });
+  const isOk = (total === 30000);
+  const res = document.getElementById('openCashResult');
+  res.textContent = `合計：${total.toLocaleString()} 円 ${isOk ? '（基準一致）' : '（不一致）'}`;
+  res.style.color = isOk ? 'var(--ok)' : 'var(--ng)';
+}
+
+// ========== 開店モード：従来通りの一括送信 ==========
+async function sendOpenReport() {
+  if (!confirm('開店報告を送信しますか？')) return;
   const btn = document.getElementById('sendBtn');
   btn.disabled = true; btn.textContent = '送信中...';
 
   try {
-    const sectionId = (currentMode === '開店') ? 'openSection' : 'closeSection';
-    const checks = Array.from(document.querySelectorAll(`#${sectionId} input[type="checkbox"]`))
+    const checks = Array.from(document.querySelectorAll('#openSection input[type="checkbox"]'))
       .map(c => (c.checked ? '✅' : '❌') + ' ' + c.value).join('\n');
 
-    // 金種の内訳を作成
     const denoms = [10000, 5000, 2000, 1000, 500, 100, 50, 10, 5, 1];
-    const denominations = denoms.map(v => `${v}円: ${document.getElementById('n' + v).value || 0}枚`).join('\n');
+    const denominations = denoms.map(v => `${v}円: ${document.getElementById('o_n' + v).value || 0}枚`).join('\n');
 
-    const res = await fetch('/api/report', { 
-      method: 'POST', 
-      headers: {'Content-Type': 'application/json'}, 
-      body: JSON.stringify({ 
-        mode: currentMode, 
+    const res = await fetch('/api/report', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        mode: '開店',
         name: localStorage.getItem('spec_staff_name'),
         checks: checks,
-        comment: document.getElementById('comment').value,
-        cashText: document.getElementById('cashResult').textContent, // report.jsに合わせる
-        denominations: denominations // 内訳を送信
-      }) 
+        comment: document.getElementById('openComment').value,
+        cashText: document.getElementById('openCashResult').textContent,
+        denominations: denominations
+      })
     });
 
     if (res.ok) {
-      alert('報告を送信しました。');
-      if (currentMode === '開店') location.reload();
+      alert('開店報告を送信しました。');
+      location.reload();
     } else { alert('送信エラーが発生しました。'); }
   } catch(e) { alert('通信失敗'); }
   finally { btn.disabled = false; btn.textContent = '報告を送信'; }
+}
+
+// ========== 閉店 STEP1：レジ金額を送信 ==========
+async function sendCashReport() {
+  if (!confirm('レジ金額を送信しますか？')) return;
+  const btn = document.getElementById('sendCashBtn');
+  btn.disabled = true; btn.textContent = '送信中...';
+
+  try {
+    const denoms = [10000, 5000, 2000, 1000, 500, 100, 50, 10, 5, 1];
+    const denominations = denoms.map(v => `${v}円: ${document.getElementById('n' + v).value || 0}枚`).join('\n');
+
+    const res = await fetch('/api/report', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        mode: '閉店・レジ締め',
+        name: localStorage.getItem('spec_staff_name'),
+        checks: '（レジ締めのみ・戸締りは別送）',
+        comment: document.getElementById('comment').value,
+        cashText: document.getElementById('cashResult').textContent,
+        denominations: denominations
+      })
+    });
+
+    if (res.ok) {
+      alert('レジ金額を送信しました。\n続いて戸締りチェックに進みます。');
+      // STEP1を非表示、STEP2を表示
+      document.getElementById('closeStep1').classList.add('hidden');
+      document.getElementById('closeStep2').classList.remove('hidden');
+      // ステップ表示を更新
+      document.getElementById('stepDot1').className = 'step-dot done';
+      document.getElementById('stepDot2').className = 'step-dot active';
+      document.getElementById('stepLabel1').className = 'step-label done';
+      document.getElementById('stepLabel2').className = 'step-label active';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else { alert('送信エラーが発生しました。'); }
+  } catch(e) { alert('通信失敗'); }
+  finally { btn.disabled = false; btn.textContent = 'レジ金額を送信 →'; }
+}
+
+// ========== 閉店 STEP2：戸締りチェックを送信 ==========
+async function sendCloseCheckReport() {
+  if (!confirm('戸締り報告を送信しますか？')) return;
+  const btn = document.getElementById('sendCheckBtn');
+  btn.disabled = true; btn.textContent = '送信中...';
+
+  try {
+    const checks = Array.from(document.querySelectorAll('#closeStep2 input[type="checkbox"]'))
+      .map(c => (c.checked ? '✅' : '❌') + ' ' + c.value).join('\n');
+
+    const res = await fetch('/api/report', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        mode: '閉店・戸締り確認',
+        name: localStorage.getItem('spec_staff_name'),
+        checks: checks,
+        comment: '',
+        cashText: '（レジ締め済み・戸締り確認のみ）',
+        denominations: ''
+      })
+    });
+
+    if (res.ok) {
+      alert('戸締り報告を送信しました。\nお疲れ様でした！');
+      location.reload();
+    } else { alert('送信エラーが発生しました。'); }
+  } catch(e) { alert('通信失敗'); }
+  finally { btn.disabled = false; btn.textContent = '戸締り報告を送信'; }
 }
 
 window.onload = () => {
