@@ -68,6 +68,7 @@
 
 <main>
   <div id="welcome-message" style="display:none; text-align:center; margin-bottom:20px;"></div>
+  <div id="today-reminder" class="hidden" style="background:rgba(255,204,0,0.12); border:1px solid var(--todo); color:var(--todo); padding:12px 14px; border-radius:10px; margin-bottom:15px; font-size:14px;"></div>
 
   <div id="report-view">
     <div class="card"><div style="display:flex; gap:8px;">
@@ -152,6 +153,7 @@
         <label><input type="checkbox" value="カーテンを下ろす"> ロールスクリーンを下ろした</label>
         <label><input type="checkbox" value="ウォーマーOFF"> おしぼりウォーマーOFF</label>
         <label><input type="checkbox" value="ゴミ箱処理"> ゴミ回収・廃棄確認</label>
+        <div id="closeReminderChecks"></div>
         <label style="border:2px solid var(--ng); padding:8px; border-radius:8px;"><input type="checkbox" value="1F 入口施錠"> 1F 入口施錠（指差し）</label>
         <button id="sendCheckBtn" class="send-btn blue" onclick="sendCloseCheckReport()">戸締り報告を送信</button>
       </div>
@@ -164,6 +166,18 @@
       <div class="info-box"><b>Happy Hour (18-19):</b> No Charge<br><b>Bar Time (19-):</b> Charge ¥1,000</div>
       <div class="info-box"><b>カクヤス (当日21時迄):</b> <span class="code-val">0570-200-919</span><br><b>店舗コード:</b> <span class="code-val">679383</span></div>
       <div class="info-box"><b>氷（中央冷凍）: LINE発注</b><br>💡 2階の在庫を補充したタイミングで発注。</div>
+      <div class="info-box"><b>おしぼり: 毎週 水曜日</b><br>💡 水曜日の締め後に、おしぼりを玄関に出す。<br>（火曜日から変更になりました）</div>
+      <div class="info-box"><b>🗑 ゴミ出し（八重洲1丁目）</b><br>
+        ・燃やすごみ：毎週 月〜土曜日<br>
+        ・燃やさないごみ：毎週 火曜日<br>
+        ・プラマーク：毎週 金曜日<br>
+        ・資源：毎週 金曜日<br>
+        <div style="margin-top:8px;">
+        💡 <b>缶（スプレー缶含む）</b> → 木曜日に出す<br>
+        💡 <b>割れ物</b> → 月曜日に出す<br>
+        💡 <b>瓶</b> → カクヤスが回収。空き次第、玄関へ
+        </div>
+      </div>
       <div class="info-box" style="border-color:var(--ng);"><b>🚨 緊急連絡先:</b> <span class="code-val">090-1882-1236</span></div>
     </div>
   </div>
@@ -345,6 +359,39 @@ async function sendCloseCheckReport() {
   finally { btn.disabled = false; btn.textContent = '戸締り報告を送信'; }
 }
 
+// ========== 曜日ごとのリマインド（締め後に出すもの） ==========
+// 0=日 1=月 2=火 3=水 4=木 5=金 6=土
+const DAY_REMINDERS = {
+  1: ['割れ物を玄関に出す'],
+  3: ['おしぼりを玄関に出す'],
+  4: ['缶（スプレー缶含む）を玄関に出す']
+};
+const DAY_NAMES = ['日', '月', '火', '水', '木', '金', '土'];
+
+// 深夜（朝6時前）の締めは「前の日の営業」として扱う
+function getBusinessDay() {
+  const d = new Date();
+  if (d.getHours() < 6) d.setDate(d.getDate() - 1);
+  return d.getDay();
+}
+
+function showTodayReminder() {
+  const day = getBusinessDay();
+  const items = DAY_REMINDERS[day] || [];
+  if (items.length === 0) return;
+
+  // 画面上部のお知らせ
+  const box = document.getElementById('today-reminder');
+  box.innerHTML = `<b>📅 今日（${DAY_NAMES[day]}）は締め後に：</b><br>` +
+    items.map(t => '・' + t).join('<br>');
+  box.classList.remove('hidden');
+
+  // 閉店の戸締りチェックにも項目を追加
+  document.getElementById('closeReminderChecks').innerHTML = items.map(t =>
+    `<label style="color:var(--todo); font-weight:bold;"><input type="checkbox" value="${t}"> ${t}</label>`
+  ).join('');
+}
+
 window.onload = () => {
   if (localStorage.getItem('spec_auth_granted') === 'true') {
     document.getElementById('auth-overlay').style.display = 'none';
@@ -352,6 +399,7 @@ window.onload = () => {
     document.getElementById('welcome-message').innerHTML = `<strong>お疲れ様です、${n}さん。</strong>`;
     document.getElementById('welcome-message').style.display = 'block';
   }
+  showTodayReminder();
 };
 </script>
 </body>
